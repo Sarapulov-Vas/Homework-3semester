@@ -18,7 +18,7 @@ public class Matrix
         var fileText = File.ReadAllLines(path);
         if (fileText.Length == 0)
         {
-            throw new IncorrectFileException();
+            throw new IncorrectFileException("Empty file.");
         }
 
         foreach (var line in fileText)
@@ -33,7 +33,7 @@ public class Matrix
                 }
                 else
                 {
-                    throw new IncorrectFileException();
+                    throw new IncorrectFileException("File contains foreign characters.");
                 }
             }
 
