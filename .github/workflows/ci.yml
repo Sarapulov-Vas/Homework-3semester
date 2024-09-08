@@ -18,7 +18,7 @@ jobs:
         uses: codecov/codecov-action@v4.0.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: Sarapulov-Vas/Homework-2semester
+          slug: Sarapulov-Vas/Homework-3semester
   build-Windows:
     runs-on: windows-latest
     defaults:
