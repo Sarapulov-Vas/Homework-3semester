@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelMatrixMultiplicatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixGenerator", "MatrixGenerator\MatrixGenerator.csproj", "{350F5A15-7B10-4796-86F1-607AF3D7FF01}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelMatrixMultiplication.Tests", "ParallelMatrixMultiplication.Tests\ParallelMatrixMultiplication.Tests.csproj", "{03603F94-E96F-444B-BE08-3C9DA23AD5E6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{350F5A15-7B10-4796-86F1-607AF3D7FF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{350F5A15-7B10-4796-86F1-607AF3D7FF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{350F5A15-7B10-4796-86F1-607AF3D7FF01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03603F94-E96F-444B-BE08-3C9DA23AD5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03603F94-E96F-444B-BE08-3C9DA23AD5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03603F94-E96F-444B-BE08-3C9DA23AD5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03603F94-E96F-444B-BE08-3C9DA23AD5E6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

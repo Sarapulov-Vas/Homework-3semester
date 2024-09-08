@@ -111,6 +111,34 @@ public class Matrix
     }
 
     /// <summary>
+    /// A method for checking the equivalence of matrices.
+    /// </summary>
+    /// <param name="first">first matrix.</param>
+    /// <param name="second">second matrix.</param>
+    /// <returns>Are matrices equivalent.</returns>
+    public static bool Equals(Matrix first, Matrix second)
+    {
+        if (first.GetRowsCount() != second.GetRowsCount() ||
+        first.GetColumnsCount() != second.GetColumnsCount())
+        {
+            return false;
+        }
+
+        for (int i = 0; i < first.GetRowsCount(); i++)
+        {
+            for (int j = 0; j < first.GetColumnsCount(); j++)
+            {
+                if (first[i, j] != second[i, j])
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>
     /// Matrix printing method.
     /// </summary>
     public void Print()
