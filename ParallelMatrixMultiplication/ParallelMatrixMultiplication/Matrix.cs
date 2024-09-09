@@ -125,7 +125,7 @@ public class Matrix
             throw new ArgumentException("The number of columns of the first matrix is not equal to the number of rows of the second matrix.");
         }
 
-        var threads = new Thread[3];
+        var threads = new Thread[10];
         var chunckSize = (firstMatrix.GetRowsCount() / threads.Length) + 1;
 
         var currentMatrix = new int[firstMatrix.GetRowsCount(), secondMatrix.GetColumnsCount()];

@@ -1,5 +1,7 @@
 namespace ParallelMatrixMultiplication.Tests;
 
+using MatrixGenerator;
+
 /// <summary>
 /// Test class.
 /// </summary>
@@ -80,7 +82,6 @@ public class Tests
         var firstMatrix = new Matrix(inputFilePath1);
         var secondMatrix = new Matrix(inputFilePath2);
         var result = Matrix.ParallelMultiplication(firstMatrix, secondMatrix);
-        result.Print();
         Assert.IsTrue(Matrix.Equals(result, new Matrix(expectedResult)));
     }
 
@@ -126,6 +127,18 @@ public class Tests
     }
 
     /// <summary>
+    /// Testing incorrect files.
+    /// </summary>
+    /// <param name="path">File path.</param>
+    [TestCase("../../../TestFiles/incorrectFile1.txt")]
+    [TestCase("../../../TestFiles/incorrectFile2.txt")]
+    public void TestIncorrectFile(string path)
+    {
+        var firstMatrix = new Matrix("../../../TestFiles/matrix2.txt");
+        Assert.Throws<IncorrectFileException>(() => new Matrix(path));
+    }
+
+    /// <summary>
     /// Test the method of exporting a matrix to a file.
     /// </summary>
     /// <param name="path">Path to the matrix file.</param>
@@ -140,5 +153,23 @@ public class Tests
         var exportMatrix = new Matrix("../../../TestFiles/exportMatrix.txt");
         Assert.IsTrue(Matrix.Equals(matrix, exportMatrix));
         File.Delete("../../../TestFiles/exportMatrix.txt");
+    }
+
+    /// <summary>
+    /// Testing multithreaded matrix multiplication, using random matrix generation.
+    /// </summary>
+    [Test]
+    public void RandomTestParallelMultiplication()
+    {
+        var size = 2;
+        for (int i = 1; i <= 10; i++)
+        {
+            var firstMatrix = new Matrix(MatrixGenerator.Generate(size, size));
+            var secondMatrix = new Matrix(MatrixGenerator.Generate(size, size));
+            var expectedResult = Matrix.Multiplication(firstMatrix, secondMatrix);
+            var result = Matrix.ParallelMultiplication(firstMatrix, secondMatrix);
+            Assert.IsTrue(Matrix.Equals(result, expectedResult));
+            size *= 2;
+        }
     }
 }

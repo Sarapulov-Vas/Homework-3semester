@@ -1,34 +1,54 @@
-﻿using System.Text;
-var rand = new Random();
-for (int i = 1; i <= 10; i++)
+﻿namespace MatrixGenerator;
+
+using System.Text;
+
+/// <summary>
+/// A class implementing a file generator with two matrices for multiplication.
+/// </summary>
+public class MatrixGenerator
 {
-    var size = Math.Pow(2, i);
-    var currentString = new StringBuilder();
-    var resultStrings = new List<string>();
+    private static Random rand = new ();
 
-    for (int j = 0; j < size; j++)
+    /// <summary>
+    /// Method implementing matrix generation.
+    /// </summary>
+    /// <param name="path">File path.</param>
+    /// <param name="size1">Matrix size1.</param>
+    /// <param name="size2">Matrix size2.</param>
+    public static void GenerateFile(string path, int size1, int size2)
     {
-        for (int k = 0; k < size; k++)
-        {
-            currentString.Append($"{rand.Next(-10000, 10000)} ");
-        }
+        var currentString = new StringBuilder();
+        var resultStrings = new List<string>();
 
-        resultStrings.Add(currentString.ToString()[..^1]);
-        currentString.Clear();
+        for (int i = 0; i < size1; i++)
+        {
+            for (int j = 0; j < size2; j++)
+            {
+                currentString.Append($"{rand.Next(-10000, 10000)} ");
+            }
+
+            resultStrings.Add(currentString.ToString()[..^1]);
+            currentString.Clear();
+        }
     }
 
-    File.WriteAllLines($"firstMatrix{i}.txt", resultStrings);
-    resultStrings.Clear();
-    for (int j = 0; j < size; j++)
+    /// <summary>
+    /// Method implementing matrix generation.
+    /// </summary>
+    /// <param name="size1">Matrix size1.</param>
+    /// <param name="size2">Matrix size2.</param>
+    /// <returns>Matrix.</returns>
+    public static int[,] Generate(int size1, int size2)
     {
-        for (int k = 0; k < size; k++)
+        var matrix = new int[size1, size2];
+        for (int i = 0; i < size1; i++)
         {
-            currentString.Append($"{rand.Next(-10000, 10000)} ");
+            for (int j = 0; j < size2; j++)
+            {
+                matrix[i, j] = rand.Next(-10000, 10000);
+            }
         }
 
-        resultStrings.Add(currentString.ToString()[..^1]);
-        currentString.Clear();
+        return matrix;
     }
-
-    File.WriteAllLines($"secondMatrix{i}.txt", resultStrings);
 }

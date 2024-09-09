@@ -1,3 +1,5 @@
+namespace ParallelMatrixMultiplication;
+
 public class IncorrectFileException : Exception
 {
     public IncorrectFileException()
