@@ -85,6 +85,7 @@ public class Matrix
     /// <param name="firstMatrix">First matrix.</param>
     /// <param name="secondMatrix">Second matrix.</param>
     /// <returns>The result of matrix multiplication.</returns>
+    /// <exception cref="ArgumentException">Exception if matrices cannot be multiplied.</exception>
     public static Matrix Multiplication(Matrix firstMatrix, Matrix secondMatrix)
     {
         if (!MatrixCheck(firstMatrix, secondMatrix))
@@ -103,6 +104,59 @@ public class Matrix
                     currentMatrix[i, j] += firstMatrix[i, k] * secondMatrix[k, j];
                 }
             }
+        }
+
+        var result = new Matrix(currentMatrix);
+        result.ExportToFile("result.txt");
+        return result;
+    }
+
+    /// <summary>
+    /// Method implementing multithreaded matrix multiplication.
+    /// </summary>
+    /// <param name="firstMatrix">First matrix.</param>
+    /// <param name="secondMatrix">Second matrix.</param>
+    /// <returns>The result of matrix multiplication.</returns>
+    /// <exception cref="ArgumentException">Exception if matrices cannot be multiplied.</exception>
+    public static Matrix ParallelMultiplication(Matrix firstMatrix, Matrix secondMatrix)
+    {
+        if (!MatrixCheck(firstMatrix, secondMatrix))
+        {
+            throw new ArgumentException("The number of columns of the first matrix is not equal to the number of rows of the second matrix.");
+        }
+
+        var threads = new Thread[3];
+        var chunckSize = (firstMatrix.GetRowsCount() / threads.Length) + 1;
+
+        var currentMatrix = new int[firstMatrix.GetRowsCount(), secondMatrix.GetColumnsCount()];
+
+        for (int i = 0; i < threads.Length; i++)
+        {
+            var local = i;
+            threads[i] = new Thread(() =>
+            {
+                for (int j = local * chunckSize;
+                    j < (local + 1) * chunckSize && j < firstMatrix.GetRowsCount(); j++)
+                {
+                    for (int k = 0; k < secondMatrix.GetColumnsCount(); k++)
+                    {
+                        for (int p = 0; p < secondMatrix.GetRowsCount(); p++)
+                        {
+                            currentMatrix[j, k] += firstMatrix[j, p] * secondMatrix[p, k];
+                        }
+                    }
+                }
+            });
+        }
+
+        foreach (var thread in threads)
+        {
+            thread.Start();
+        }
+
+        foreach (var thread in threads)
+        {
+            thread.Join();
         }
 
         var result = new Matrix(currentMatrix);

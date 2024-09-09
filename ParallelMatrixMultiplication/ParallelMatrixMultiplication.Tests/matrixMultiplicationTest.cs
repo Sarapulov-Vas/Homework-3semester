@@ -67,6 +67,24 @@ public class Tests
     }
 
     /// <summary>
+    /// Matrices multiplication test.
+    /// </summary>
+    /// <param name="inputFilePath1">Path to the first matrix file.</param>
+    /// <param name="inputFilePath2">Path to the second matrix file.</param>
+    /// <param name="expectedResult">Path to a file with the expected result.</param>
+    [TestCase("../../../TestFiles/matrix1.txt", "../../../TestFiles/matrix1.txt", "../../../TestFiles/expectedMatrix1_1.txt")]
+    [TestCase("../../../TestFiles/matrix1.txt", "../../../TestFiles/matrix2.txt", "../../../TestFiles/expectedMatrix1_2.txt")]
+    [TestCase("../../../TestFiles/matrix1.txt", "../../../TestFiles/matrix3.txt", "../../../TestFiles/expectedMatrix1_3.txt")]
+    public void TestParallelMultiplication(string inputFilePath1, string inputFilePath2, string expectedResult)
+    {
+        var firstMatrix = new Matrix(inputFilePath1);
+        var secondMatrix = new Matrix(inputFilePath2);
+        var result = Matrix.ParallelMultiplication(firstMatrix, secondMatrix);
+        result.Print();
+        Assert.IsTrue(Matrix.Equals(result, new Matrix(expectedResult)));
+    }
+
+    /// <summary>
     /// Test verifying the method of column counting.
     /// </summary>
     /// <param name="path">Path to the matrix file.</param>
