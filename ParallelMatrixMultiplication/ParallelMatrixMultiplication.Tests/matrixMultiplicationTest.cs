@@ -132,6 +132,7 @@ public class Tests
     /// <param name="path">File path.</param>
     [TestCase("../../../TestFiles/incorrectFile1.txt")]
     [TestCase("../../../TestFiles/incorrectFile2.txt")]
+    [TestCase("../../../TestFiles/incorrectFile3.txt")]
     public void TestIncorrectFile(string path)
     {
         var firstMatrix = new Matrix("../../../TestFiles/matrix2.txt");

@@ -21,10 +21,15 @@ public class Matrix
             throw new IncorrectFileException("Empty file.");
         }
 
+        List<int> buffer = [];
         foreach (var line in fileText)
         {
             var splitLine = line.Split(' ');
-            List<int> buffer = [];
+            if (this.matrix.Count != 0 && this.matrix[0].Length != splitLine.Length)
+            {
+                throw new IncorrectFileException("Incorrect matrix.");
+            }
+
             foreach (var num in splitLine)
             {
                 if (int.TryParse(num, out int number))
@@ -38,6 +43,7 @@ public class Matrix
             }
 
             this.matrix.Add(buffer.ToArray());
+            buffer.Clear();
         }
     }
 
