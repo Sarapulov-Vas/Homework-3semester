@@ -1,6 +1,10 @@
-using System.Text;
+// <copyright file="Matrix.cs" company="Sarapulov Vasilii">
+// Copyright (c) Sarapulov Vasilii. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+// </copyright>
 
 namespace ParallelMatrixMultiplication;
+using System.Text;
 
 /// <summary>
 /// A class that implements a matrix.

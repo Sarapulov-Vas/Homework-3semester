@@ -1,11 +1,16 @@
-﻿namespace MatrixGenerator;
+﻿// <copyright file="MatrixGenerator.cs" company="Sarapulov Vasilii">
+// Copyright (c) Sarapulov Vasilii. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+// </copyright>
+
+namespace MatrixGenerator;
 
 using System.Text;
 
 /// <summary>
 /// A class implementing a file generator with two matrices for multiplication.
 /// </summary>
-public class MatrixGenerator
+public static class MatrixGenerator
 {
     private static Random rand = new ();
 
@@ -30,6 +35,8 @@ public class MatrixGenerator
             resultStrings.Add(currentString.ToString()[..^1]);
             currentString.Clear();
         }
+
+        File.WriteAllLines(path, resultStrings);
     }
 
     /// <summary>
