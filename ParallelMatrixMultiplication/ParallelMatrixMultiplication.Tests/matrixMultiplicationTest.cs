@@ -177,5 +177,20 @@ public class Tests
             Assert.IsTrue(Matrix.Equals(result, expectedResult));
             size *= 2;
         }
+
+        var rand = new Random();
+        size = 2;
+        for (int i = 1; i <= 10; i++)
+        {
+            var size1 = rand.Next(1, size);
+            var size2 = rand.Next(1, size);
+            var size3 = rand.Next(1, size);
+            var firstMatrix = new Matrix(MatrixGenerator.Generate(size1, size2));
+            var secondMatrix = new Matrix(MatrixGenerator.Generate(size2, size3));
+            var expectedResult = Matrix.Multiplication(firstMatrix, secondMatrix);
+            var result = Matrix.ParallelMultiplication(firstMatrix, secondMatrix);
+            Assert.IsTrue(Matrix.Equals(result, expectedResult));
+            size *= 2;
+        }
     }
 }
