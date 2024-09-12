@@ -140,7 +140,6 @@ public class Tests
     [TestCase("../../../TestFiles/incorrectFile3.txt")]
     public void TestIncorrectFile(string path)
     {
-        var firstMatrix = new Matrix("../../../TestFiles/matrix2.txt");
         Assert.Throws<IncorrectFileException>(() => new Matrix(path));
     }
 
