@@ -1,13 +1,14 @@
 ﻿// <copyright file="Program.cs" company="Sarapulov Vasilii">
 // Copyright (c) Sarapulov Vasilii. All Rights Reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Licensed under the MIT License. See LICENSE in the repository root for license information.
+// https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
 // </copyright>
 
 using ParallelMatrixMultiplication;
 using System.Diagnostics;
 using ScottPlot;
 
-var sw = new Stopwatch();
+var stopwatch = new Stopwatch();
 var n = 100;
 List<double> xSize = [];
 List<double> yTime = [];
@@ -24,16 +25,16 @@ for (int i = 1; i <= 15; i++)
     var parallelTimes = new double[n];
     for (int j = 0; j < n; j++)
     {
-        sw.Start();
+        stopwatch.Start();
         Matrix.Multiplication(matrix, matrix);
-        sw.Stop();
-        times[j] = sw.ElapsedMilliseconds;
-        sw.Reset();
-        sw.Start();
+        stopwatch.Stop();
+        times[j] = stopwatch.ElapsedMilliseconds;
+        stopwatch.Reset();
+        stopwatch.Start();
         Matrix.ParallelMultiplication(matrix, matrix);
-        sw.Stop();
-        parallelTimes[j] = sw.ElapsedMilliseconds;
-        sw.Reset();
+        stopwatch.Stop();
+        parallelTimes[j] = stopwatch.ElapsedMilliseconds;
+        stopwatch.Reset();
     }
 
     var meanValue = (double)times.Sum() / n;
@@ -53,7 +54,6 @@ for (int i = 1; i <= 15; i++)
 
     var parallelStandardDeviation = Math.Sqrt(parallelSum / n);
     xSize.Add(size);
-    Console.WriteLine(size);
     yTime.Add(meanValue);
     yParallelTime.Add(parallelMeanValue);
     yStandardDeviation.Add(standardDeviation);

@@ -1,6 +1,7 @@
 // <copyright file="Matrix.cs" company="Sarapulov Vasilii">
 // Copyright (c) Sarapulov Vasilii. All Rights Reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Licensed under the MIT License. See LICENSE in the repository root for license information.
+// https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
 // </copyright>
 
 namespace ParallelMatrixMultiplication;
@@ -78,15 +79,8 @@ public class Matrix
     /// <returns>Value of a matrix element.</returns>
     public int this[int i, int j]
     {
-        get
-        {
-            return this.matrix[i][j];
-        }
-
-        set
-        {
-            this.matrix[i][j] = value;
-        }
+        get => this.matrix[i][j];
+        set => this.matrix[i][j] = value;
     }
 
     /// <summary>
@@ -98,18 +92,18 @@ public class Matrix
     /// <exception cref="ArgumentException">Exception if matrices cannot be multiplied.</exception>
     public static Matrix Multiplication(Matrix firstMatrix, Matrix secondMatrix)
     {
-        if (!MatrixCheck(firstMatrix, secondMatrix))
+        if (firstMatrix.GetColumnsCount != secondMatrix.GetRowsCount)
         {
             throw new ArgumentException("The number of columns of the first matrix is not equal to the number of rows of the second matrix.");
         }
 
-        var currentMatrix = new int[firstMatrix.GetRowsCount(), secondMatrix.GetColumnsCount()];
+        var currentMatrix = new int[firstMatrix.GetRowsCount, secondMatrix.GetColumnsCount];
 
-        for (int i = 0; i < firstMatrix.GetRowsCount(); i++)
+        for (int i = 0; i < firstMatrix.GetRowsCount; i++)
         {
-            for (int j = 0; j < secondMatrix.GetColumnsCount(); j++)
+            for (int j = 0; j < secondMatrix.GetColumnsCount; j++)
             {
-                for (int k = 0; k < secondMatrix.GetRowsCount(); k++)
+                for (int k = 0; k < secondMatrix.GetRowsCount; k++)
                 {
                     currentMatrix[i, j] += firstMatrix[i, k] * secondMatrix[k, j];
                 }
@@ -117,7 +111,6 @@ public class Matrix
         }
 
         var result = new Matrix(currentMatrix);
-        result.ExportToFile("result.txt");
         return result;
     }
 
@@ -130,27 +123,28 @@ public class Matrix
     /// <exception cref="ArgumentException">Exception if matrices cannot be multiplied.</exception>
     public static Matrix ParallelMultiplication(Matrix firstMatrix, Matrix secondMatrix)
     {
-        if (!MatrixCheck(firstMatrix, secondMatrix))
+        if (firstMatrix.GetColumnsCount != secondMatrix.GetRowsCount)
         {
             throw new ArgumentException("The number of columns of the first matrix is not equal to the number of rows of the second matrix.");
         }
 
-        var threads = new Thread[10];
-        var chunckSize = (firstMatrix.GetRowsCount() / threads.Length) + 1;
+        var threadCount = Math.Min(Environment.ProcessorCount, firstMatrix.GetRowsCount);
+        var threads = new Thread[threadCount];
+        var chunkSize = (firstMatrix.GetRowsCount / threads.Length) + 1;
 
-        var currentMatrix = new int[firstMatrix.GetRowsCount(), secondMatrix.GetColumnsCount()];
+        var currentMatrix = new int[firstMatrix.GetRowsCount, secondMatrix.GetColumnsCount];
 
         for (int i = 0; i < threads.Length; i++)
         {
             var local = i;
             threads[i] = new Thread(() =>
             {
-                for (int j = local * chunckSize;
-                    j < (local + 1) * chunckSize && j < firstMatrix.GetRowsCount(); j++)
+                for (int j = local * chunkSize;
+                    j < (local + 1) * chunkSize && j < firstMatrix.GetRowsCount; j++)
                 {
-                    for (int k = 0; k < secondMatrix.GetColumnsCount(); k++)
+                    for (int k = 0; k < secondMatrix.GetColumnsCount; k++)
                     {
-                        for (int p = 0; p < secondMatrix.GetRowsCount(); p++)
+                        for (int p = 0; p < secondMatrix.GetRowsCount; p++)
                         {
                             currentMatrix[j, k] += firstMatrix[j, p] * secondMatrix[p, k];
                         }
@@ -169,9 +163,7 @@ public class Matrix
             thread.Join();
         }
 
-        var result = new Matrix(currentMatrix);
-        result.ExportToFile("result.txt");
-        return result;
+        return new Matrix(currentMatrix);
     }
 
     /// <summary>
@@ -182,15 +174,15 @@ public class Matrix
     /// <returns>Are matrices equivalent.</returns>
     public static bool Equals(Matrix first, Matrix second)
     {
-        if (first.GetRowsCount() != second.GetRowsCount() ||
-        first.GetColumnsCount() != second.GetColumnsCount())
+        if (first.GetRowsCount != second.GetRowsCount ||
+            first.GetColumnsCount != second.GetColumnsCount)
         {
             return false;
         }
 
-        for (int i = 0; i < first.GetRowsCount(); i++)
+        for (int i = 0; i < first.GetRowsCount; i++)
         {
-            for (int j = 0; j < first.GetColumnsCount(); j++)
+            for (int j = 0; j < first.GetColumnsCount; j++)
             {
                 if (first[i, j] != second[i, j])
                 {
@@ -219,16 +211,21 @@ public class Matrix
     }
 
     /// <summary>
-    /// Method to get the number of rows.
+    /// Gets rows count.
     /// </summary>
-    /// <returns>Number of rows in the matrix.</returns>
-    public int GetRowsCount() => this.matrix.Count;
+    public int GetRowsCount
+    {
+        get => this.matrix.Count;
+    }
 
     /// <summary>
-    /// Method to get the number of columns.
+    /// Gets number of columns.
     /// </summary>
     /// <returns>Number of columns.</returns>
-    public int GetColumnsCount() => this.matrix[0].Length;
+    public int GetColumnsCount 
+    {
+        get => this.matrix[0].Length;
+    }
 
     /// <summary>
     /// Method of unloading the matrix to a file.
@@ -250,16 +247,5 @@ public class Matrix
         }
 
         File.WriteAllLines(path, resultStrings);
-    }
-
-    /// <summary>
-    /// A method of checking matrices for the possibility of multiplication.
-    /// </summary>
-    /// <param name="firstMatrix">First matrix.</param>
-    /// <param name="secondMatrix">Second matrix.</param>
-    /// <returns>Is it possible to multiply matrices.</returns>
-    private static bool MatrixCheck(Matrix firstMatrix, Matrix secondMatrix)
-    {
-        return firstMatrix.GetColumnsCount() == secondMatrix.GetRowsCount();
     }
 }

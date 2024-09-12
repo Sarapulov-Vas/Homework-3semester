@@ -1,6 +1,7 @@
-// <copyright file="matrixMultiplicationTest.cs" company="Sarapulov Vasilii">
+// <copyright file="MatrixMultiplicationTest.cs" company="Sarapulov Vasilii">
 // Copyright (c) Sarapulov Vasilii. All Rights Reserved.
-// Licensed under the MIT License. See LICENSE in the project root for license information.
+// Licensed under the MIT License. See LICENSE in the repository root for license information.
+// https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
 // </copyright>
 
 namespace ParallelMatrixMultiplication.Tests;
@@ -38,9 +39,7 @@ public class Tests
     [TestCase("../../../TestFiles/matrix2.txt")]
     [TestCase("../../../TestFiles/matrix3.txt")]
     public void TestEquals(string inputFilePath)
-    {
-        Assert.IsTrue(Matrix.Equals(new Matrix(inputFilePath), new Matrix(inputFilePath)));
-    }
+        => Assert.IsTrue(Matrix.Equals(new Matrix(inputFilePath), new Matrix(inputFilePath)));
 
     /// <summary>
     /// Matrix equivalence test.
@@ -52,9 +51,7 @@ public class Tests
     [TestCase("../../../TestFiles/matrix3.txt", "../../../TestFiles/matrix1.txt")]
     [TestCase("../../../TestFiles/matrix1.txt", "../../../TestFiles/matrix4.txt")]
     public void TestNotEquals(string inputFilePath1, string inputFilePath2)
-    {
-        Assert.IsFalse(Matrix.Equals(new Matrix(inputFilePath1), new Matrix(inputFilePath2)));
-    }
+        => Assert.IsFalse(Matrix.Equals(new Matrix(inputFilePath1), new Matrix(inputFilePath2)));
 
     /// <summary>
     /// Matrices multiplication test.
@@ -102,7 +99,7 @@ public class Tests
     public void TestGetColumnsCount(string path, int number)
     {
         var matrix = new Matrix(path);
-        Assert.That(matrix.GetColumnsCount(), Is.EqualTo(number));
+        Assert.That(matrix.GetColumnsCount, Is.EqualTo(number));
     }
 
     /// <summary>
@@ -117,7 +114,7 @@ public class Tests
     public void TestGetRowsCount(string path, int number)
     {
         var matrix = new Matrix(path);
-        Assert.That(matrix.GetRowsCount(), Is.EqualTo(number));
+        Assert.That(matrix.GetRowsCount, Is.EqualTo(number));
     }
 
     /// <summary>
@@ -139,9 +136,7 @@ public class Tests
     [TestCase("../../../TestFiles/incorrectFile2.txt")]
     [TestCase("../../../TestFiles/incorrectFile3.txt")]
     public void TestIncorrectFile(string path)
-    {
-        Assert.Throws<IncorrectFileException>(() => new Matrix(path));
-    }
+        => Assert.Throws<IncorrectFileException>(() => new Matrix(path));
 
     /// <summary>
     /// Test the method of exporting a matrix to a file.
