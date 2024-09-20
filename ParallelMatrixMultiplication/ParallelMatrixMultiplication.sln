@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelMatrixMultiplication", "ParallelMatrixMultiplication\ParallelMatrixMultiplication.csproj", "{BB7D396F-67BC-4D2B-89E1-954B3829E2D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MatrixGenerator", "MatrixGenerator\MatrixGenerator.csproj", "{350F5A15-7B10-4796-86F1-607AF3D7FF01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParallelMatrixMultiplication.Tests", "ParallelMatrixMultiplication.Tests\ParallelMatrixMultiplication.Tests.csproj", "{03603F94-E96F-444B-BE08-3C9DA23AD5E6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB7D396F-67BC-4D2B-89E1-954B3829E2D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB7D396F-67BC-4D2B-89E1-954B3829E2D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB7D396F-67BC-4D2B-89E1-954B3829E2D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB7D396F-67BC-4D2B-89E1-954B3829E2D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{350F5A15-7B10-4796-86F1-607AF3D7FF01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{350F5A15-7B10-4796-86F1-607AF3D7FF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{350F5A15-7B10-4796-86F1-607AF3D7FF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{350F5A15-7B10-4796-86F1-607AF3D7FF01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03603F94-E96F-444B-BE08-3C9DA23AD5E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03603F94-E96F-444B-BE08-3C9DA23AD5E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03603F94-E96F-444B-BE08-3C9DA23AD5E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03603F94-E96F-444B-BE08-3C9DA23AD5E6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
