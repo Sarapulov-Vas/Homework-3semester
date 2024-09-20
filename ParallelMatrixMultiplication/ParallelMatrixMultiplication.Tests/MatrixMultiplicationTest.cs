@@ -99,7 +99,7 @@ public class Tests
     public void TestGetColumnsCount(string path, int number)
     {
         var matrix = new Matrix(path);
-        Assert.That(matrix.GetColumnsCount, Is.EqualTo(number));
+        Assert.That(matrix.ColumnsCount, Is.EqualTo(number));
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public class Tests
     public void TestGetRowsCount(string path, int number)
     {
         var matrix = new Matrix(path);
-        Assert.That(matrix.GetRowsCount, Is.EqualTo(number));
+        Assert.That(matrix.RowsCount, Is.EqualTo(number));
     }
 
     /// <summary>

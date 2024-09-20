@@ -92,18 +92,18 @@ public class Matrix
     /// <exception cref="ArgumentException">Exception if matrices cannot be multiplied.</exception>
     public static Matrix Multiplication(Matrix firstMatrix, Matrix secondMatrix)
     {
-        if (firstMatrix.GetColumnsCount != secondMatrix.GetRowsCount)
+        if (firstMatrix.ColumnsCount != secondMatrix.RowsCount)
         {
             throw new ArgumentException("The number of columns of the first matrix is not equal to the number of rows of the second matrix.");
         }
 
-        var currentMatrix = new int[firstMatrix.GetRowsCount, secondMatrix.GetColumnsCount];
+        var currentMatrix = new int[firstMatrix.RowsCount, secondMatrix.ColumnsCount];
 
-        for (int i = 0; i < firstMatrix.GetRowsCount; i++)
+        for (int i = 0; i < firstMatrix.RowsCount; i++)
         {
-            for (int j = 0; j < secondMatrix.GetColumnsCount; j++)
+            for (int j = 0; j < secondMatrix.ColumnsCount; j++)
             {
-                for (int k = 0; k < secondMatrix.GetRowsCount; k++)
+                for (int k = 0; k < secondMatrix.RowsCount; k++)
                 {
                     currentMatrix[i, j] += firstMatrix[i, k] * secondMatrix[k, j];
                 }
@@ -123,16 +123,16 @@ public class Matrix
     /// <exception cref="ArgumentException">Exception if matrices cannot be multiplied.</exception>
     public static Matrix ParallelMultiplication(Matrix firstMatrix, Matrix secondMatrix)
     {
-        if (firstMatrix.GetColumnsCount != secondMatrix.GetRowsCount)
+        if (firstMatrix.ColumnsCount != secondMatrix.RowsCount)
         {
             throw new ArgumentException("The number of columns of the first matrix is not equal to the number of rows of the second matrix.");
         }
 
-        var threadCount = Math.Min(Environment.ProcessorCount, firstMatrix.GetRowsCount);
+        var threadCount = Math.Min(Environment.ProcessorCount, firstMatrix.RowsCount);
         var threads = new Thread[threadCount];
-        var chunkSize = (firstMatrix.GetRowsCount / threads.Length) + 1;
+        var chunkSize = (firstMatrix.RowsCount / threads.Length) + 1;
 
-        var currentMatrix = new int[firstMatrix.GetRowsCount, secondMatrix.GetColumnsCount];
+        var currentMatrix = new int[firstMatrix.RowsCount, secondMatrix.ColumnsCount];
 
         for (int i = 0; i < threads.Length; i++)
         {
@@ -140,11 +140,11 @@ public class Matrix
             threads[i] = new Thread(() =>
             {
                 for (int j = local * chunkSize;
-                    j < (local + 1) * chunkSize && j < firstMatrix.GetRowsCount; j++)
+                    j < (local + 1) * chunkSize && j < firstMatrix.RowsCount; j++)
                 {
-                    for (int k = 0; k < secondMatrix.GetColumnsCount; k++)
+                    for (int k = 0; k < secondMatrix.ColumnsCount; k++)
                     {
-                        for (int p = 0; p < secondMatrix.GetRowsCount; p++)
+                        for (int p = 0; p < secondMatrix.RowsCount; p++)
                         {
                             currentMatrix[j, k] += firstMatrix[j, p] * secondMatrix[p, k];
                         }
@@ -174,15 +174,15 @@ public class Matrix
     /// <returns>Are matrices equivalent.</returns>
     public static bool Equals(Matrix first, Matrix second)
     {
-        if (first.GetRowsCount != second.GetRowsCount ||
-            first.GetColumnsCount != second.GetColumnsCount)
+        if (first.RowsCount != second.RowsCount ||
+            first.ColumnsCount != second.ColumnsCount)
         {
             return false;
         }
 
-        for (int i = 0; i < first.GetRowsCount; i++)
+        for (int i = 0; i < first.RowsCount; i++)
         {
-            for (int j = 0; j < first.GetColumnsCount; j++)
+            for (int j = 0; j < first.ColumnsCount; j++)
             {
                 if (first[i, j] != second[i, j])
                 {
@@ -213,19 +213,13 @@ public class Matrix
     /// <summary>
     /// Gets rows count.
     /// </summary>
-    public int GetRowsCount
-    {
-        get => this.matrix.Count;
-    }
+    public int RowsCount => this.matrix.Count;
 
     /// <summary>
     /// Gets number of columns.
     /// </summary>
     /// <returns>Number of columns.</returns>
-    public int GetColumnsCount 
-    {
-        get => this.matrix[0].Length;
-    }
+    public int ColumnsCount => this.matrix[0].Length;
 
     /// <summary>
     /// Method of unloading the matrix to a file.
