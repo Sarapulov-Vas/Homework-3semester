@@ -6,13 +6,13 @@
 
 public class Philosopher
 {
-    private int number;
+    private readonly int number;
     private const int EatTime = 200;
     private const int ThinkTime = 500;
-    private object leftFork;
-    private object rightFork;
-    private Thread thread;
-    private bool goHome = false;
+    private readonly object leftFork;
+    private readonly object rightFork;
+    private readonly Thread thread;
+    private bool goHome;
 
     public Philosopher(int number, object leftFork, object rightFork)
     {
