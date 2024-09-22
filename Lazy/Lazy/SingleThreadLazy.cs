@@ -9,7 +9,7 @@ namespace Lazy;
 /// <inheritdoc/>
 public class SingleThreadLazy<T> : ILazy<T>
 {
-    private Func<T> supplier;
+    private readonly Func<T> supplier;
     private T? result;
     private bool hasResult;
 

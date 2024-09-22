@@ -9,10 +9,10 @@ namespace Lazy;
 /// <inheritdoc/>
 public class MultiThreadLazy<T> : ILazy<T>
 {
-    private Func<T> supplier;
+    private readonly Func<T> supplier;
     private T? result;
     private bool hasResult;
-    private object lockObject = new();
+    private readonly object lockObject = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MultiThreadLazy{T}"/> class.
