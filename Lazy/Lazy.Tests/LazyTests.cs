@@ -50,7 +50,7 @@ public class LazyTests
     [TestCaseSource(typeof(TestData), nameof(TestData.MultiThreadCases))]
     public void TestMultiThread<T>(Func<T> function, object expectedResult, int numberOfGet, int numberOfThreads)
     {
-        var testLazy = new SingleThreadLazy<T>(function);
+        var testLazy = new MultiThreadLazy<T>(function);
         StartThreads(
             () => ThreadAction(testLazy, numberOfGet, expectedResult),
             numberOfThreads);
@@ -64,7 +64,7 @@ public class LazyTests
     [TestCaseSource(typeof(TestData), nameof(TestData.MultiThreadNullCases))]
     public void TestMultiThreadNullException(int numberOfGet, int numberOfThreads)
     {
-        var testLazy = new SingleThreadLazy<int?>(() => null);
+        var testLazy = new MultiThreadLazy<int?>(() => null);
         StartThreads(
             () => ThreadActionNullException(testLazy, numberOfGet),
             numberOfThreads);
