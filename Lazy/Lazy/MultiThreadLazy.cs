@@ -1,4 +1,4 @@
-// <copyright file="Lazy.cs" company="Sarapulov Vasilii">
+// <copyright file="MultiThreadLazy.cs" company="Sarapulov Vasilii">
 // Copyright (c) Sarapulov Vasilii. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the repository root for license information.
 // https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
@@ -7,17 +7,18 @@
 namespace Lazy;
 
 /// <inheritdoc/>
-public class Lazy<T> : ILazy<T>
+public class MultiThreadLazy<T> : ILazy<T>
 {
     private Func<T> supplier;
     private T? result;
     private bool hasResult;
+    private object lockObject = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="Lazy{T}"/> class.
+    /// Initializes a new instance of the <see cref="MultiThreadLazy{T}"/> class.
     /// </summary>
     /// <param name="func">Function.</param>
-    public Lazy(Func<T> func)
+    public MultiThreadLazy(Func<T> func)
     {
         supplier = func;
     }
@@ -27,8 +28,11 @@ public class Lazy<T> : ILazy<T>
     {
         if (!hasResult)
         {
-            hasResult = true;
-            result = supplier();
+            lock (lockObject)
+            {
+                hasResult = true;
+                result = supplier();
+            }
         }
 
         if (result != null)
@@ -37,7 +41,7 @@ public class Lazy<T> : ILazy<T>
         }
         else
         {
-            throw new NullReferenceException("The calculated value was null.");
+            throw new ArgumentNullException("The calculated value was null.");
         }
     }
 }
