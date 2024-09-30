@@ -46,7 +46,7 @@ public class MyThreadPool
         => new MyTask<TResult>(func, cancellation.Token, taskQueue);
 
     /// <summary>
-    /// The method that closes threads.
+    /// The method that shutdown threads.
     /// </summary>
     public void Shutdown()
     {
@@ -71,6 +71,11 @@ public class MyThreadPool
             {
                 while (taskQueue.Count == 0)
                 {
+                    if (cancellation.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
                     Monitor.Wait(taskQueue);
                 }
 

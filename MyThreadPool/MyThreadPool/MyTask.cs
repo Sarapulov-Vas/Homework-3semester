@@ -4,7 +4,7 @@
 // https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
 // </copyright>
 
-using MyThreadPool;
+namespace MyThreadPool;
 
 /// <summary>
 /// Class that implements the task interface.
@@ -51,20 +51,20 @@ public class MyTask<TResult> : IMyTask<TResult>
     {
         lock (lockObject)
         {
+            if (cancellation.IsCancellationRequested)
+            {
+                Monitor.PulseAll(lockObject);
+                return;
+            }
+
             try
             {
-                if (cancellation.IsCancellationRequested)
-                {
-                    Monitor.PulseAll(lockObject);
-                    return;
-                }
-
                 result = function();
+                IsCompleted = true;
             }
             catch (Exception e)
             {
                 exception = e;
-                IsCompleted = true;
             }
 
             Monitor.PulseAll(lockObject);
@@ -75,7 +75,7 @@ public class MyTask<TResult> : IMyTask<TResult>
     {
         lock (lockObject)
         {
-            while (!IsCompleted && exception is not null)
+            while (!IsCompleted && exception is null)
             {
                 if (cancellation.IsCancellationRequested)
                 {
@@ -93,10 +93,8 @@ public class MyTask<TResult> : IMyTask<TResult>
             {
                 throw new ArgumentNullException("The function result was null.");
             }
-            else
-            {
-                return result;
-            }
+
+            return result;
         }
     }
 }
