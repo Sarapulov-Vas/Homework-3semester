@@ -34,7 +34,6 @@ public class MyThreadPoolTests
         var pool = new MyThreadPool(numberOfThreads);
         for (int i = 0; i < numberOfTasks; i++)
         {
-            var j = i;
             tasks[i] = pool.Submit(() => 1 + 1);
         }
 
