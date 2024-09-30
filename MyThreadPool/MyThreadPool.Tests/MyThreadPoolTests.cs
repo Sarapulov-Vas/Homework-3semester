@@ -4,18 +4,27 @@
 // https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
 // </copyright>
 
-using System.Security.Cryptography.X509Certificates;
-
 namespace MyThreadPool.Tests;
 
+/// <summary>
+/// Tests for thread pool.
+/// </summary>
 public class MyThreadPoolTests
 {
+    /// <summary>
+    /// Test of throwing an exception when the number of threads is incorrect.
+    /// </summary>
     [Test]
     public void TestArgumentOutOfRangeExceptionWhenCreatingPool()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => new MyThreadPool(-1));
     }
 
+    /// <summary>
+    /// Thread pool test.
+    /// </summary>
+    /// <param name="numberOfThreads">Number of Threads.</param>
+    /// <param name="numberOfTasks">Number of tasks.</param>
     [TestCase(2, 2)]
     [TestCase(5, 10)]
     [TestCase(10, 5)]
@@ -36,6 +45,12 @@ public class MyThreadPoolTests
         }
     }
 
+    /// <summary>
+    /// The ContinueWith test.
+    /// </summary>
+    /// <param name="numberOfThreads">Number of threads.</param>
+    /// <param name="numberOfTasks">Number of tasks.</param>
+    /// <param name="numberOfContinue">Number of ContinueWith.</param>
     [TestCase(2, 2, 1)]
     [TestCase(5, 10, 5)]
     [TestCase(10, 5, 5)]
@@ -61,6 +76,9 @@ public class MyThreadPoolTests
         AssertTasks(newTasks, "2");
     }
 
+    /// <summary>
+    /// Test thread pool on tasks with different return types.
+    /// </summary>
     [Test]
     public void TestThreadPoolDifferentTresult()
     {
@@ -85,6 +103,9 @@ public class MyThreadPoolTests
         Assert.IsTrue(task4.IsCompleted);
     }
 
+    /// <summary>
+    /// Test a task with several ContinueWith.
+    /// </summary>
     [Test]
     public void TestSeveralContinueWith()
     {
@@ -99,6 +120,10 @@ public class MyThreadPoolTests
         Assert.IsTrue(task.IsCompleted);
     }
 
+    /// <summary>
+    /// Exception test when an exception occurs in a task.
+    /// </summary>
+    /// <exception cref="DivideByZeroException">Test exception.</exception>
     [Test]
     public void TestThreadPoolAggregateException()
     {
@@ -110,6 +135,9 @@ public class MyThreadPoolTests
         Assert.IsFalse(task.IsCompleted);
     }
 
+    /// <summary>
+    /// Test an exception when null is returned in a task.
+    /// </summary>
     [Test]
     public void TestThreadPoolNullReturn()
     {
@@ -120,6 +148,9 @@ public class MyThreadPoolTests
         Assert.IsTrue(task.IsCompleted);
     }
 
+    /// <summary>
+    /// Test of the thread termination method.
+    /// </summary>
     [Test]
     public void TestShutdown()
     {
@@ -130,6 +161,9 @@ public class MyThreadPoolTests
         Assert.Throws<TaskCanceledException>(() => { var a = task.Result; });
     }
 
+    /// <summary>
+    /// Exception test at ContinueWith after shutdown.
+    /// </summary>
     [Test]
     public void TestContinueWithAfterShutdown()
     {
