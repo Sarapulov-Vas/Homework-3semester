@@ -152,11 +152,18 @@ public class MyThreadPoolTests
     [Test]
     public void TestShutdown()
     {
-        int numberOfThreads = 4;
+        int numberOfThreads = 1;
         var pool = new MyThreadPool(numberOfThreads);
-        var task = pool.Submit(() => 1 + 2);
+        var task1 = pool.Submit(() =>
+        {
+            Thread.Sleep(500);
+            return 1;
+        });
+        var task2 = pool.Submit(() => 1 + 1);
+        Thread.Sleep(100);
         pool.Shutdown();
-        Assert.Throws<TaskCanceledException>(() => { var a = task.Result; });
+        Assert.That(task1.Result, Is.EqualTo(1));
+        Assert.Throws<TaskCanceledException>(() => { var a = task2.Result; });
     }
 
     /// <summary>
