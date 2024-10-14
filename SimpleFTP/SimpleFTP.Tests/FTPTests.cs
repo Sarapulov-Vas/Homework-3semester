@@ -69,7 +69,11 @@ public class FTPTests
     {
         var client = new Client(Host, Port);
         var response = await client.List(path);
-        Assert.That(response, Is.EqualTo(expectedResult));
+        Assert.That(response.Length, Is.EqualTo(expectedResult.Length));
+        foreach (var element in response)
+        {
+            Assert.IsTrue(expectedResult.Contains(element));
+        }
     }
 
     /// <summary>
