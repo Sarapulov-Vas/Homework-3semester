@@ -9,21 +9,27 @@ namespace SimpleFTP;
 using System.Net;
 using System.Net.Sockets;
 
-public class Server
+/// <summary>
+/// Server class.
+/// </summary>
+/// <param name="address">Ip address.</param>
+/// <param name="port">Port.</param>
+public class Server(IPAddress address, int port)
 {
-    private readonly TcpListener tcpListener;
+    private readonly TcpListener tcpListener = new (address, port);
 
-    public Server(IPAddress address, int port)
-    {
-        tcpListener = new (address, port);
-    }
-
+    /// <summary>
+    /// Server start method.
+    /// </summary>
     public void Start()
     {
         tcpListener.Start();
         Run();
     }
 
+    /// <summary>
+    /// A method for shutting down a server.
+    /// </summary>
     public void Shutdown()
     {
         tcpListener.Stop();

@@ -8,18 +8,22 @@ namespace SimpleFTP;
 
 using System.Net.Sockets;
 
-public class Client
+/// <summary>
+/// Client class.
+/// </summary>
+/// <param name="hostName">Host name.</param>
+/// <param name="port">Port.</param>
+public class Client(string hostName, int port)
 {
-    private readonly string hostName;
+    private readonly string hostName = hostName;
 
-    private readonly int port;
+    private readonly int port = port;
 
-    public Client(string hostName, int port)
-    {
-        this.hostName = hostName;
-        this.port = port;
-    }
-
+    /// <summary>
+    /// Method for requesting a list of the contents of a directory.
+    /// </summary>
+    /// <param name="path">Path.</param>
+    /// <returns>List of contents if a directory.</returns>
     public async Task<(string path, bool isDir)[]?> List(string path)
     {
     using var client = new TcpClient(hostName, port);
@@ -30,6 +34,11 @@ public class Client
     return await ProcessListResponse(stream);
     }
 
+    /// <summary>
+    /// A method to retrieve the contents of a file.
+    /// </summary>
+    /// <param name="path">Path.</param>
+    /// <returns>The byte array of the file.</returns>
     public async Task<byte[]?> Get(string path)
     {
     using var client = new TcpClient(hostName, port);
