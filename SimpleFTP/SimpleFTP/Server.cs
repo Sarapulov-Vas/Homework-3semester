@@ -98,6 +98,7 @@ public class Server(IPAddress address, int port)
         if (!Directory.Exists(path))
         {
             await writer.WriteLineAsync("-1");
+            await writer.FlushAsync();
             return;
         }
 
@@ -119,6 +120,7 @@ public class Server(IPAddress address, int port)
         if (!File.Exists(path))
         {
             await writer.WriteLineAsync("-1");
+            await writer.FlushAsync();
             return;
         }
 

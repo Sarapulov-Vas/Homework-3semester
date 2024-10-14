@@ -55,7 +55,7 @@ public class Client(string hostName, int port)
         var reader = new StreamReader(stream);
         var data = await reader.ReadToEndAsync();
         var elements = data.Split(" ");
-        if (elements[0] == "-1")
+        if (elements[0] == "-1\n")
         {
             return null;
         }
@@ -74,7 +74,7 @@ public class Client(string hostName, int port)
         var reader = new StreamReader(stream);
         var data = await reader.ReadToEndAsync();
         var elements = data.Split(" ");
-        if (elements[0] == "-1")
+        if (elements[0] == "-1\n")
         {
             return null;
         }
