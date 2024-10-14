@@ -8,6 +8,7 @@ namespace SimpleFTP;
 
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 
 /// <summary>
 /// Server class.
@@ -87,13 +88,15 @@ public class Server(IPAddress address, int port)
         }
 
         var files = Directory.GetFileSystemEntries(path);
-        await writer.WriteAsync(files.Length.ToString());
+        StringBuilder response = new ();
+        response.Append(files.Length.ToString());
         foreach (var file in files)
         {
-            await writer.WriteAsync($" {file} {Directory.Exists(file)}");
+            response.Append($" {file} {Directory.Exists(file)}");
         }
 
-        await writer.WriteLineAsync();
+        await writer.WriteLineAsync(response.ToString());
+        await writer.FlushAsync();
     }
 
     private async Task RespondToGetRequest(string path, Stream stream)
@@ -106,12 +109,14 @@ public class Server(IPAddress address, int port)
         }
 
         using var fileStream = new FileStream(path, FileMode.Open);
-        await writer.WriteAsync(fileStream.Length.ToString());
+        StringBuilder response = new ();
+        response.Append(fileStream.Length.ToString());
         for (int i = 0; i < fileStream.Length; i++)
         {
-            await writer.WriteAsync($" {fileStream.ReadByte()}");
+            response.Append($" {fileStream.ReadByte()}");
         }
 
-        await writer.WriteLineAsync();
+        await writer.WriteLineAsync(response.ToString());
+        await writer.FlushAsync();
     }
 }
