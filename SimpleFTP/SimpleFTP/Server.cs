@@ -19,6 +19,8 @@ public class Server(IPAddress address, int port)
 {
     private readonly TcpListener tcpListener = new (address, port);
 
+    private readonly CancellationTokenSource cancellation = new ();
+
     /// <summary>
     /// Server start method.
     /// </summary>
@@ -33,28 +35,40 @@ public class Server(IPAddress address, int port)
     /// </summary>
     public void Shutdown()
     {
+        cancellation.Cancel();
         tcpListener.Stop();
     }
 
     private async Task Run()
     {
-        while (true)
+        List<Task> tasks = [];
+        while (!cancellation.IsCancellationRequested)
         {
-            var socket = await tcpListener.AcceptSocketAsync();
-            Task.Run(async () =>
+            try
             {
-                var stream = new NetworkStream(socket);
-                var reader = new StreamReader(stream);
-                var data = await reader.ReadLineAsync();
-                if (data == null)
+                var socket = await tcpListener.AcceptSocketAsync(cancellation.Token);
+                var task = Task.Run(async () =>
                 {
-                    return;
-                }
+                    var stream = new NetworkStream(socket);
+                    var reader = new StreamReader(stream);
+                    var data = await reader.ReadLineAsync();
+                    if (data == null)
+                    {
+                        return;
+                    }
 
-                ProcessRequest(data, stream);
-                socket.Close();
-            });
+                    ProcessRequest(data, stream);
+                    socket.Close();
+                });
+                tasks.Add(task);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
+
+        Task.WhenAll(tasks);
     }
 
     private async void ProcessRequest(string request, Stream stream)
