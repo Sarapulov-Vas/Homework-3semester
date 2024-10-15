@@ -94,24 +94,20 @@ public class FTPTests
     /// <summary>
     /// Test retrieving a list of files from a directory that does not exist.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    public async Task TestListNonExistentDirectory()
+    public void TestListNonExistentDirectory()
     {
         var client = new Client(Host, Port);
-        var response = await client.List("../../../TestFolder");
-        Assert.That(response, Is.EqualTo(null));
+        Assert.ThrowsAsync<DirectoryNotFoundException>(async () => await client.List("../../../TestFolder"));
     }
 
     /// <summary>
     /// Test retrieving the contents of a file on a path that does not exist.
     /// </summary>
-    /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
     [Test]
-    public async Task TestGetNonExistentDirectory()
+    public void TestGetNonExistentDirectory()
     {
         var client = new Client(Host, Port);
-        var response = await client.Get("../../../TestFiles/testFile.txt");
-        Assert.That(response, Is.EqualTo(null));
+        Assert.ThrowsAsync<DirectoryNotFoundException>(async () => await client.Get("../../../TestFiles/testFile.txt"));
     }
 }

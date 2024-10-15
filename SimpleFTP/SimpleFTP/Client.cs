@@ -7,7 +7,6 @@
 namespace SimpleFTP;
 
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
 
 /// <summary>
 /// Client class.
@@ -25,7 +24,7 @@ public class Client(string hostName, int port)
     /// </summary>
     /// <param name="path">Path.</param>
     /// <returns>List of contents if a directory.</returns>
-    public async Task<(string path, bool isDir)[]?> List(string path)
+    public async Task<(string path, bool isDir)[]> List(string path)
     {
     using var client = new TcpClient(hostName, port);
     var stream = client.GetStream();
@@ -40,7 +39,7 @@ public class Client(string hostName, int port)
     /// </summary>
     /// <param name="path">Path.</param>
     /// <returns>The byte array of the file.</returns>
-    public async Task<byte[]?> Get(string path)
+    public async Task<byte[]> Get(string path)
     {
     using var client = new TcpClient(hostName, port);
     var stream = client.GetStream();
@@ -50,39 +49,38 @@ public class Client(string hostName, int port)
     return await ProcessGetResponse(stream);
     }
 
-    private async Task<(string path, bool isDir)[]?> ProcessListResponse(Stream stream)
+    private async Task<string[]> ReadStream(Stream stream)
     {
         var reader = new StreamReader(stream);
         var data = await reader.ReadToEndAsync();
         var elements = data.Split(" ");
         if (elements[0] == "-1\n")
         {
-            return null;
+            throw new DirectoryNotFoundException("The directory/file does not exist.");
         }
 
-        var response = new (string path, bool isDir)[int.Parse(elements[0])];
+        return elements;
+    }
+
+    private async Task<(string path, bool isDir)[]> ProcessListResponse(Stream stream)
+    {
+        var responseElements = await ReadStream(stream);
+        var response = new (string path, bool isDir)[int.Parse(responseElements[0])];
         for (int i = 0; i < response.Length; i++)
         {
-            response[i] = (elements[(i * 2) + 1], bool.Parse(elements[(i * 2) + 2]));
+            response[i] = (responseElements[(i * 2) + 1], bool.Parse(responseElements[(i * 2) + 2]));
         }
 
         return response;
     }
 
-    private async Task<byte[]?> ProcessGetResponse(Stream stream)
+    private async Task<byte[]> ProcessGetResponse(Stream stream)
     {
-        var reader = new StreamReader(stream);
-        var data = await reader.ReadToEndAsync();
-        var elements = data.Split(" ");
-        if (elements[0] == "-1\n")
-        {
-            return null;
-        }
-
-        var response = new byte[int.Parse(elements[0])];
+        var responseElements = await ReadStream(stream);
+        var response = new byte[int.Parse(responseElements[0])];
         for (int i = 0; i < response.Length; i++)
         {
-            response[i] = byte.Parse(elements[i + 1]);
+            response[i] = byte.Parse(responseElements[i + 1]);
         }
 
         return response;

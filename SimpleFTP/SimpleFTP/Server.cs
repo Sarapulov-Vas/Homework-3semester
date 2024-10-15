@@ -57,8 +57,14 @@ public class Server(IPAddress address, int port)
                         return;
                     }
 
-                    ProcessRequest(data, stream);
-                    socket.Close();
+                    try
+                    {
+                        ProcessRequest(data, stream);
+                    }
+                    finally
+                    {
+                        socket.Close();
+                    }
                 });
                 tasks.Add(task);
             }
@@ -71,7 +77,7 @@ public class Server(IPAddress address, int port)
         Task.WhenAll(tasks);
     }
 
-    private async void ProcessRequest(string request, Stream stream)
+    private async Task ProcessRequest(string request, Stream stream)
     {
         var elements = request.Split(' ');
         if (elements.Length != 2)
