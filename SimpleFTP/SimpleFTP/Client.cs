@@ -7,6 +7,7 @@
 namespace SimpleFTP;
 
 using System.Net.Sockets;
+using System.Text;
 
 /// <summary>
 /// Client class.
@@ -44,27 +45,21 @@ public class Client(string hostName, int port)
     using var client = new TcpClient(hostName, port);
     var stream = client.GetStream();
     var writer = new StreamWriter(stream);
-    writer.WriteLineAsync($"2 {path}");
-    writer.Flush();
-    return await ProcessGetResponse(stream);
-    }
-
-    private async Task<string[]> ReadStream(Stream stream)
-    {
-        var reader = new StreamReader(stream);
-        var data = await reader.ReadToEndAsync();
-        var elements = data.Split(" ");
-        if (elements[0] == "-1\n")
-        {
-            throw new DirectoryNotFoundException("The directory/file does not exist.");
-        }
-
-        return elements;
+    await writer.WriteLineAsync($"2 {path}");
+    await writer.FlushAsync();
+    return ProcessGetResponse(stream);
     }
 
     private async Task<(string path, bool isDir)[]> ProcessListResponse(Stream stream)
     {
-        var responseElements = await ReadStream(stream);
+        var reader = new StreamReader(stream);
+        var data = await reader.ReadToEndAsync();
+        var responseElements = data.Split(" ");
+        if (int.Parse(responseElements[0]) == -1)
+        {
+            throw new DirectoryNotFoundException("The directory does not exist.");
+        }
+
         var response = new (string path, bool isDir)[int.Parse(responseElements[0])];
         for (int i = 0; i < response.Length; i++)
         {
@@ -74,13 +69,19 @@ public class Client(string hostName, int port)
         return response;
     }
 
-    private async Task<byte[]> ProcessGetResponse(Stream stream)
+    private byte[] ProcessGetResponse(Stream stream)
     {
-        var responseElements = await ReadStream(stream);
-        var response = new byte[int.Parse(responseElements[0])];
-        for (int i = 0; i < response.Length; i++)
+        var reader = new BinaryReader(stream);
+        var length = reader.ReadInt64();
+        if (length == -1)
         {
-            response[i] = byte.Parse(responseElements[i + 1]);
+            throw new DirectoryNotFoundException("The file does not exist.");
+        }
+
+        var response = new byte[length];
+        for (int i = 0; i < length; i++)
+        {
+            response[i] = reader.ReadByte();
         }
 
         return response;

@@ -91,7 +91,7 @@ public class Server(IPAddress address, int port)
                 await RespondToListRequest(elements[1], stream);
                 break;
             case "2":
-                await RespondToGetRequest(elements[1], stream);
+                RespondToGetRequest(elements[1], stream);
                 break;
             default:
                 throw new ArgumentException("Invalid request type.");
@@ -110,35 +110,34 @@ public class Server(IPAddress address, int port)
 
         var files = Directory.GetFileSystemEntries(path);
         StringBuilder response = new ();
-        response.Append(files.Length.ToString());
+        response.Append(files.Length);
         foreach (var file in files)
         {
-            response.Append($" {file} {Directory.Exists(file)}");
+            response.Append($" {file.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)}" +
+                $" {Directory.Exists(file)}");
         }
 
         await writer.WriteLineAsync(response.ToString());
         await writer.FlushAsync();
     }
 
-    private async Task RespondToGetRequest(string path, Stream stream)
+    private void RespondToGetRequest(string path, Stream stream)
     {
-        var writer = new StreamWriter(stream);
+        var writer = new BinaryWriter(stream);
         if (!File.Exists(path))
-        {
-            await writer.WriteLineAsync("-1");
-            await writer.FlushAsync();
+       {
+            writer.Write(-1L);
+            writer.Flush();
             return;
         }
 
         using var fileStream = new FileStream(path, FileMode.Open);
-        StringBuilder response = new ();
-        response.Append(fileStream.Length.ToString());
+        writer.Write(fileStream.Length);
         for (int i = 0; i < fileStream.Length; i++)
         {
-            response.Append($" {fileStream.ReadByte()}");
+            writer.Write((byte)fileStream.ReadByte());
         }
 
-        await writer.WriteLineAsync(response.ToString());
-        await writer.FlushAsync();
+        writer.Flush();
     }
 }

@@ -18,7 +18,7 @@ public class FTPTests
     private const string Host = "localhost";
 
     private static readonly object[] TestCase =
-    {
+    [
         new object[]
         {
             "../../../TestFiles/TestFolder",
@@ -37,7 +37,7 @@ public class FTPTests
                 ("../../../TestFiles/TestFolder", true),
             },
         },
-    };
+    ];
 
     private Server server;
 
