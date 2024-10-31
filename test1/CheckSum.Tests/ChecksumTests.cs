@@ -18,10 +18,10 @@ public class ChecksumTests
     /// </summary>
     /// <param name="path">Path.</param>
     /// <param name="expectedResult">Expected result.</param>
-    [TestCase("../../../TestFiles", new byte[] { 108, 25, 101, 19, 131, 143, 172, 200, 168, 80, 187, 21, 237, 14, 75, 81 })]
-    [TestCase("../../../TestFiles/TestFolder", new byte[] { 196, 166, 240, 76, 30, 128, 65, 70, 103, 189, 203, 168, 181, 191, 132, 201 })]
-    [TestCase("../../../TestFiles/TestFolder/test.bmp", new byte[] { 51, 17, 240, 157, 199, 50, 247, 111, 210, 73, 176, 132, 179, 166, 66, 36 })]
     [TestCase("../../../TestFiles/TestFile1.txt", new byte[] { 87, 207, 162, 71, 59, 104, 15, 72, 167, 12, 53, 12, 9, 199, 197, 110 })]
+    [TestCase("../../../TestFiles/TestFolder/test.bmp", new byte[] { 51, 17, 240, 157, 199, 50, 247, 111, 210, 73, 176, 132, 179, 166, 66, 36 })]
+    [TestCase("../../../TestFiles/TestFolder", new byte[] { 196, 166, 240, 76, 30, 128, 65, 70, 103, 189, 203, 168, 181, 191, 132, 201 })]
+    [TestCase("../../../TestFiles", new byte[] { 108, 25, 101, 19, 131, 143, 172, 200, 168, 80, 187, 21, 237, 14, 75, 81 })]
     public void SingleThreadChecksumTest(string path, byte[] expectedResult)
     {
         var checksum = new SingleThreadChecksum();
@@ -32,10 +32,10 @@ public class ChecksumTests
     /// Test for multithread checksum.
     /// </summary>
     /// <param name="path">Path.</param>
-    [TestCase("../../../TestFiles")]
-    [TestCase("../../../TestFiles/TestFolder")]
     [TestCase("../../../TestFiles/TestFolder/test.bmp")]
     [TestCase("../../../TestFiles/TestFile1.txt")]
+    [TestCase("../../../TestFiles/TestFolder")]
+    [TestCase("../../../TestFiles")]
     public void MultiThreadChecksumTest(string path)
     {
         var singleThreadChecksum = new SingleThreadChecksum();
