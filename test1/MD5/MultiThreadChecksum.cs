@@ -12,7 +12,7 @@ using System.Text;
 /// <summary>
 /// A class of single-threaded checksum calculation.
 /// </summary>
-public class MultiThreadCheckSum() : ICheckSum
+public class MultiThreadCheckSum : ICheckSum
 {
     /// <inheritdoc/>
     public byte[] CalculateCheckSum(string path)
