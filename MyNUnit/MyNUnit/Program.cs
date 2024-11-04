@@ -28,8 +28,9 @@ try
         foreach (var message in testsResult.GetMessages())
         {
             Console.WriteLine(message);
-            Environment.Exit(1);
         }
+
+        Environment.Exit(1);
     }
 
     foreach (var test in testsResult)
