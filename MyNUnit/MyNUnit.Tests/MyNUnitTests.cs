@@ -7,6 +7,9 @@
 namespace MyNUnit.Tests;
 using MyNUnit;
 
+/// <summary>
+/// Class for tests.
+/// </summary>
 public class MyNUnitTests
 {
     private Dictionary<string, int> expectedResult = new ()
@@ -19,6 +22,9 @@ public class MyNUnitTests
         { "TestPassed2", 1 },
     };
 
+    /// <summary>
+    /// Test run tests by path in the directory.
+    /// </summary>
     [NUnit.Framework.Test]
     public void TestOfTests_PathToDirectory()
     {
@@ -29,6 +35,9 @@ public class MyNUnitTests
         }
     }
 
+    /// <summary>
+    /// Test run tests by file path.
+    /// </summary>
     [NUnit.Framework.Test]
     public void TestOfTests_PathToFile()
     {
@@ -39,6 +48,9 @@ public class MyNUnitTests
         }
     }
 
+    /// <summary>
+    /// Test messages for test errors.
+    /// </summary>
     [NUnit.Framework.Test]
     public void TestError()
     {

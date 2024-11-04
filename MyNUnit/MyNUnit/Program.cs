@@ -20,16 +20,18 @@ if (!Path.Exists(args[0]))
 }
 
 Console.WriteLine("Start test execution; wait ...");
-var testsResult = UnitTest.RunTests(args[0]);
-if (testsResult.GetMessages().Length != 0)
+try
 {
-     foreach (var message in testsResult.GetMessages())
-     {
-        Console.WriteLine(message);
-     }
-}
-else
-{
+    var testsResult = UnitTest.RunTests(args[0]);
+    if (testsResult.GetMessages().Length != 0)
+    {
+        foreach (var message in testsResult.GetMessages())
+        {
+            Console.WriteLine(message);
+            Environment.Exit(1);
+        }
+    }
+
     foreach (var test in testsResult)
     {
         Console.Write($"Test: {test.Key.Name} ");
@@ -52,4 +54,9 @@ else
     Console.Write(testsResult.NumberFailedTests == 0 ? "Passed!  " : "Failed!  ");
     Console.WriteLine($"failed  {testsResult.NumberFailedTests}; passed  {testsResult.NumberPassedTests}; " +
         $"ignored  {testsResult.NumberIgnoredTests}; total  {testsResult.GetNumberTests()}");
+}
+catch
+{
+    Console.WriteLine("The file is not an assembly!");
+    Environment.Exit(1);
 }
