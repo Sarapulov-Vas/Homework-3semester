@@ -59,6 +59,7 @@ public class UnitTest
                 }
                 catch
                 {
+                    // We do not do anything because the error message is in testInfo.
                 }
 
                 return testsInfo;
@@ -110,15 +111,20 @@ public class UnitTest
 
     private static void StartTests(TestsInfo testsInfo, Type classType)
     {
+        if (testsInfo.GetNumberTests() == 0)
+        {
+            return;
+        }
+
         if (testsInfo.BeforeClass is not null)
         {
             try
             {
-                testsInfo.BeforeClass.Invoke(classType, testsInfo.BeforeClass.GetParameters());
+                testsInfo.BeforeClass.Invoke(classType, null);
             }
-            catch
+            catch (Exception e)
             {
-                testsInfo.AddMessage($"The BeforeClass {classType.Name} method is not executed because an exception occurred.");
+                testsInfo.AddMessage($"Exception in {testsInfo.BeforeClass.Name}; Message:\n {e.Message}");
                 throw;
             }
         }
@@ -132,9 +138,9 @@ public class UnitTest
                 {
                     testsInfo.BeforeTest.Invoke(instance, null);
                 }
-                catch
+                catch (Exception e)
                 {
-                    testsInfo.AddMessage($"The Before method of test {test.Key.Name} is not executed because an exception occurred.");
+                    testsInfo.AddMessage($"Exception in {testsInfo.BeforeTest.Name}; Message:\n {e.Message}");
                     continue;
                 }
             }
@@ -142,7 +148,7 @@ public class UnitTest
             var attributeArguments = (TestAttribute)Attribute.GetCustomAttributes(test.Key)[0];
             if (attributeArguments.Argument == TestArgument.Ignore)
             {
-                testsInfo[test.Key] = new TestResult(test.Key.Name, -1, attributeArguments.Message, 0, null);
+                testsInfo[test.Key] = new TestResult(-1, attributeArguments.Message, 0, null);
             }
             else
             {
@@ -152,12 +158,12 @@ public class UnitTest
                     stopwatch.Start();
                     test.Key.Invoke(instance, null);
                     stopwatch.Stop();
-                    testsInfo[test.Key] = new TestResult(test.Key.Name, 1, string.Empty, stopwatch.ElapsedMilliseconds, null);
+                    testsInfo[test.Key] = new TestResult(1, string.Empty, stopwatch.ElapsedMilliseconds, null);
                 }
                 catch (TargetParameterCountException e)
                 {
                     stopwatch.Stop();
-                    testsInfo[test.Key] = new TestResult(test.Key.Name, -1, "Test must not have parameters.", stopwatch.ElapsedMilliseconds, e);
+                    testsInfo[test.Key] = new TestResult(-1, $"Exception in {test.Key.Name}; Message:\n {e.Message}", stopwatch.ElapsedMilliseconds, e);
                     continue;
                 }
                 catch (Exception e)
@@ -165,12 +171,12 @@ public class UnitTest
                     if (attributeArguments.Argument == TestArgument.Expected)
                     {
                         stopwatch.Stop();
-                        testsInfo[test.Key] = new TestResult(test.Key.Name, 1, string.Empty, stopwatch.ElapsedMilliseconds, e);
+                        testsInfo[test.Key] = new TestResult(1, string.Empty, stopwatch.ElapsedMilliseconds, e);
                     }
                     else
                     {
                         stopwatch.Stop();
-                        testsInfo[test.Key] = new TestResult(test.Key.Name, 0, string.Empty, stopwatch.ElapsedMilliseconds, e);
+                        testsInfo[test.Key] = new TestResult(0, string.Empty, stopwatch.ElapsedMilliseconds, e);
                     }
                 }
             }
@@ -181,9 +187,9 @@ public class UnitTest
                 {
                     testsInfo.AfterTest.Invoke(instance, null);
                 }
-                catch
+                catch (Exception e)
                 {
-                    testsInfo.AddMessage($"The After method of test {test.Key.Name} is not executed because an exception occurred.");
+                    testsInfo.AddMessage($"Exception in {testsInfo.AfterTest.Name}; Message:\n {e.Message}");
                     continue;
                 }
             }
@@ -193,11 +199,11 @@ public class UnitTest
         {
             try
             {
-                testsInfo.AfterClass.Invoke(classType, testsInfo.AfterClass.GetParameters());
+                testsInfo.AfterClass.Invoke(classType, null);
             }
-            catch
+            catch (Exception e)
             {
-                testsInfo.AddMessage($"The AfterClass {classType.Name} method is not executed because an exception occurred.");
+                testsInfo.AddMessage($"Exception in {testsInfo.AfterClass.Name}; Message:\n {e.Message}");
             }
         }
     }

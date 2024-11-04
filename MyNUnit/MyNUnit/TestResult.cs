@@ -15,7 +15,7 @@ namespace MyNUnit;
 /// 0 - test failed.
 /// 1 - test passed.
 /// <param name="message">Test message.</param>
-public class TestResult(string testName, int result, string message, long time, Exception? exception)
+public class TestResult(int result, string message, long time, Exception? exception)
 {
     /// <summary>
     /// Gets message to the test result.
@@ -26,11 +26,6 @@ public class TestResult(string testName, int result, string message, long time, 
     /// Gets a value indicating whether the test has been successfully passed.
     /// </summary>
     public long Result { get; private set; } = result;
-
-    /// <summary>
-    /// Gets test Name.
-    /// </summary>
-    public string TestName { get; private set; } = testName;
 
     /// <summary>
     /// Gets test execution time.

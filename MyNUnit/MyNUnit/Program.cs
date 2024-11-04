@@ -33,20 +33,20 @@ else
     foreach (var test in testsResult)
     {
         Console.Write($"Test: {test.Key.Name} ");
-        if (test.Value!.Result == -1)
+        Console.Write($"[{test.Value!.Time} ms]; ");
+        if (test.Value.Result == -1)
         {
-            Console.Write($"Ignored; Reason: {test.Value.Messages}; ");
+            Console.WriteLine($"Ignored; Reason: {test.Value.Messages}; ");
         }
         else if (test.Value.Result == 1)
         {
-            Console.Write("Passed; ");
+            Console.WriteLine("Passed; ");
         }
         else
         {
-            Console.Write($"Failed; Exception: {test.Value.E!.InnerException!.ToString()}; ");
+            Console.WriteLine($"Failed;\n Exception message:\n {test.Value.E!.InnerException!.Message}");
+            Console.WriteLine($"Stack trace:\n {test.Value.E!.InnerException!.StackTrace}");
         }
-
-        Console.WriteLine($"Time(ms): {test.Value.Time};");
     }
 
     Console.Write(testsResult.NumberFailedTests == 0 ? "Passed!  " : "Failed!  ");
