@@ -12,7 +12,7 @@ using MyNUnit;
 /// </summary>
 public class MyNUnitTests
 {
-    private Dictionary<string, int> expectedResult = new ()
+    private readonly Dictionary<string, int> expectedResult = new ()
     {
         { "TestFailed1", 0 },
         { "TestIgnored1", -1 },

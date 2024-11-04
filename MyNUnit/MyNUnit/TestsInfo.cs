@@ -16,7 +16,7 @@ public class TestsInfo : IEnumerable<KeyValuePair<MethodInfo, TestResult?>>
 {
     private readonly Dictionary<MethodInfo, TestResult?> tests = new ();
 
-    private List<string> messages = new ();
+    private readonly List<string> messages = new ();
 
     /// <summary>
     /// Gets or sets method to execute before running the test.

@@ -11,7 +11,7 @@ using System.Diagnostics;
 /// <summary>
 /// A class that implements running unit tests.
 /// </summary>
-public class UnitTest
+public static class UnitTest
 {
     /// <summary>
     /// Test Run Method.

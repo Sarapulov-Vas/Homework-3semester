@@ -8,7 +8,7 @@ namespace TestFiles;
 using MyNUnit;
 public class TestsPassed
 {
-    private int status = 0;
+    private int status;
     [Before]
     public void Before()
     {
