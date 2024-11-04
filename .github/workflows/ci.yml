@@ -11,9 +11,9 @@ jobs:
       - name: Build
         run: for f in $(find . -name "*.sln"); do dotnet build $f; done
       - name: Add package
-        run: for f in $(find . -name "*.Tests.csproj"); do dotnet add $f package coverlet.collector; dotnet add $f package coverlet.msbuild; done
+        run: for f in $(find . -name "*.Tests.csproj"); do dotnet add $f package coverlet.collector; done
       - name: Run tests
-        run: for f in $(find . -name "*.sln"); do dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover $f; done
+        run: for f in $(find . -name "*.sln"); do dotnet test $f --collect:"XPlat Code Coverage"; done
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
         with:
