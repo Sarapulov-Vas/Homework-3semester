@@ -4,9 +4,8 @@
 // https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
 // </copyright>
 
-using MD5Checksum;
-
 namespace CheckSum.Tests;
+using MD5Checksum;
 
 /// <summary>
 /// Tests for checksum classes.
@@ -25,7 +24,7 @@ public class ChecksumTests
     public void SingleThreadChecksumTest(string path, byte[] expectedResult)
     {
         var checksum = new SingleThreadChecksum();
-        Assert.That(checksum.CalculateCheckSum(path), Is.EqualTo(expectedResult));
+        Assert.That(checksum.CalculateCheckSum(path).Result, Is.EqualTo(expectedResult));
     }
 
     /// <summary>
@@ -39,9 +38,9 @@ public class ChecksumTests
     public void MultiThreadChecksumTest(string path)
     {
         var singleThreadChecksum = new SingleThreadChecksum();
-        var multiThreadChecksum = new SingleThreadChecksum();
+        var multiThreadChecksum = new MultiThreadCheckSum();
 
-        Assert.That(singleThreadChecksum.CalculateCheckSum(path), Is.EqualTo(multiThreadChecksum.CalculateCheckSum(path)));
+        Assert.That(singleThreadChecksum.CalculateCheckSum(path).Result, Is.EqualTo(multiThreadChecksum.CalculateCheckSum(path).Result));
     }
 
     /// <summary>
