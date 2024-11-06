@@ -15,7 +15,7 @@ using System.Text;
 public class SingleThreadChecksum : ICheckSum
 {
     /// <inheritdoc/>
-    public byte[] CalculateCheckSum(string path)
+    public Task<byte[]> CalculateCheckSum(string path)
     {
         if (File.Exists(path))
         {
@@ -31,11 +31,13 @@ public class SingleThreadChecksum : ICheckSum
         }
     }
 
-    private static byte[] FileChecksum(string path) => MD5.HashData(new FileStream(path, FileMode.Open));
+    private static Task<byte[]> FileChecksum(string path) =>
+        Task.Run(() => MD5.HashData(new FileStream(path, FileMode.Open)));
 
-    private byte[] DirectoryChecksum(string path)
+    private Task<byte[]> DirectoryChecksum(string path)
     {
-        var internalFilesCheksum = Encoding.ASCII.GetBytes(Path.GetDirectoryName(path) !);
+        var pathName = Path.GetDirectoryName(path);
+        var internalFilesCheksum = Encoding.ASCII.GetBytes(pathName is not null ? pathName : string.Empty);
         var paths = Directory.GetFileSystemEntries(path);
         if (paths is not null)
         {
@@ -44,15 +46,15 @@ public class SingleThreadChecksum : ICheckSum
             {
                 if (File.Exists(directoryPath))
                 {
-                    internalFilesCheksum.Concat(FileChecksum(directoryPath));
+                    internalFilesCheksum.Concat(FileChecksum(directoryPath).Result);
                 }
                 else
                 {
-                    internalFilesCheksum.Concat(DirectoryChecksum(directoryPath));
+                    internalFilesCheksum.Concat(DirectoryChecksum(directoryPath).Result);
                 }
             }
         }
 
-        return MD5.HashData(internalFilesCheksum);
+        return Task.Run(() => MD5.HashData(internalFilesCheksum));
     }
 }

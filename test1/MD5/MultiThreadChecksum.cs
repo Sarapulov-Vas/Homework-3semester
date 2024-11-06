@@ -15,17 +15,15 @@ using System.Text;
 public class MultiThreadCheckSum : ICheckSum
 {
     /// <inheritdoc/>
-    public byte[] CalculateCheckSum(string path)
+    public Task<byte[]> CalculateCheckSum(string path)
     {
         if (File.Exists(path))
         {
-            var task = Task.Run(() => FileChecksum(path));
-            return task.Result;
+            return Task.Run(() => FileChecksum(path));
         }
         else if (Directory.Exists(path))
         {
-            var task = Task.Run(() => DirectoryChecksum(path));
-            return task.Result;
+            return Task.Run(() => DirectoryChecksum(path));
         }
         else
         {
@@ -37,7 +35,8 @@ public class MultiThreadCheckSum : ICheckSum
 
     private byte[] DirectoryChecksum(string path)
     {
-        var internalFilesCheksum = Encoding.ASCII.GetBytes(Path.GetDirectoryName(path) !);
+        var pathName = Path.GetDirectoryName(path);
+        var internalFilesCheksum = Encoding.ASCII.GetBytes(pathName is not null ? pathName : string.Empty);
         List<Task<byte[]>> taskList = new ();
         var paths = Directory.GetFileSystemEntries(path);
         if (paths is not null)

@@ -16,5 +16,5 @@ public interface ICheckSum
     /// </summary>
     /// <param name="path">Path.</param>
     /// <returns>Checksum.</returns>
-    public byte[] CalculateCheckSum(string path);
+    public Task<byte[]> CalculateCheckSum(string path);
 }
