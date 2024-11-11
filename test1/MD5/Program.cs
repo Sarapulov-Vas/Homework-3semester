@@ -8,7 +8,7 @@ using System.Diagnostics;
 using MD5Checksum;
 
 var singleThreadChecksum = new SingleThreadChecksum();
-var multiThreadChecksum = new MultiThreadCheckSum();
+var multiThreadChecksum = new MultiThreadChecksum();
 var stopwatch = new Stopwatch();
 stopwatch.Start();
 await singleThreadChecksum.CalculateCheckSum("../CheckSum.Tests/TestFiles");

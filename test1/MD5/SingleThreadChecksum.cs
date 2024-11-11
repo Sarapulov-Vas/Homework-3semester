@@ -32,7 +32,7 @@ public class SingleThreadChecksum : ICheckSum
     }
 
     private static Task<byte[]> FileChecksum(string path) =>
-        Task.Run(() => MD5.HashData(new FileStream(path, FileMode.Open)));
+        Task.Run(() => MD5.HashData(new FileStream(path, FileMode.Open, FileAccess.Read)));
 
     private Task<byte[]> DirectoryChecksum(string path)
     {

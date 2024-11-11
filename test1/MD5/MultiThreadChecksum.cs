@@ -12,18 +12,18 @@ using System.Text;
 /// <summary>
 /// A class of single-threaded checksum calculation.
 /// </summary>
-public class MultiThreadCheckSum : ICheckSum
+public class MultiThreadChecksum : ICheckSum
 {
     /// <inheritdoc/>
-    public Task<byte[]> CalculateCheckSum(string path)
+    public async Task<byte[]> CalculateCheckSum(string path)
     {
         if (File.Exists(path))
         {
-            return Task.Run(() => FileChecksum(path));
+            return await Task.Run(() => FileChecksum(path));
         }
         else if (Directory.Exists(path))
         {
-            return Task.Run(() => DirectoryChecksum(path));
+            return await Task.Run(() => DirectoryChecksum(path));
         }
         else
         {
@@ -31,9 +31,10 @@ public class MultiThreadCheckSum : ICheckSum
         }
     }
 
-    private static byte[] FileChecksum(string path) => MD5.HashData(new FileStream(path, FileMode.Open));
+    private static byte[] FileChecksum(string path) => 
+        MD5.HashData(new FileStream(path, FileMode.Open, FileAccess.Read));
 
-    private byte[] DirectoryChecksum(string path)
+    private async Task<byte[]> DirectoryChecksum(string path)
     {
         var pathName = Path.GetDirectoryName(path);
         var internalFilesCheksum = Encoding.ASCII.GetBytes(pathName is not null ? pathName : string.Empty);
@@ -56,7 +57,7 @@ public class MultiThreadCheckSum : ICheckSum
 
             foreach (var task in taskList)
             {
-                internalFilesCheksum.Concat(task.Result);
+                internalFilesCheksum.Concat(await task);
             }
         }
 
