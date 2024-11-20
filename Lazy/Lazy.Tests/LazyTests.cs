@@ -12,14 +12,33 @@ namespace Lazy.Tests;
 public class LazyTests
 {
     /// <summary>
-    /// Test exception when function returns null.
+    /// Single thread suppliers call count test.
     /// </summary>
     [Test]
-    public void TestSingleThreadNullException()
+    public void TestSingleThreadSuppliersCallCount()
     {
-        var lazy = new SingleThreadLazy<int?>(() => null);
-        Assert.Throws<ArgumentNullException>(() => lazy.Get());
+        int numberOfEvaluations = 0;
+        var lazy = new SingleThreadLazy<int?>(() => Interlocked.Increment(ref numberOfEvaluations));
+        Assert.That(lazy.Get(), Is.EqualTo(1));
+        for (int i = 0; i < 10; i++)
+        {
+            Assert.That(lazy.Get(), Is.EqualTo(1));
+        }
+
+        Assert.That(lazy.Get(), Is.EqualTo(1));
     }
+
+    /// <summary>
+    /// Multi thread suppliers call count test.
+    /// </summary>
+    [Test]
+    public void TestMultiThreadSuppliersCallCount()
+    {
+        int numberOfEvaluations = 0;
+        var lazy = new MultiThreadLazy<int?>(() => Interlocked.Increment(ref numberOfEvaluations));
+        StartThreads(
+            () => ThreadAction(lazy, 10, 1), 5);
+    } 
 
     /// <summary>
     /// Test of correct operation in single-threaded mode.
@@ -56,20 +75,6 @@ public class LazyTests
             numberOfThreads);
     }
 
-    /// <summary>
-    /// Test exception when function returns null.
-    /// </summary>
-    /// <param name="numberOfGet">Number of Get calls.</param>
-    /// <param name="numberOfThreads">Number of threads.</param>
-    [TestCaseSource(typeof(TestData), nameof(TestData.MultiThreadNullCases))]
-    public void TestMultiThreadNullException(int numberOfGet, int numberOfThreads)
-    {
-        var testLazy = new MultiThreadLazy<int?>(() => null);
-        StartThreads(
-            () => ThreadActionNullException(testLazy, numberOfGet),
-            numberOfThreads);
-    }
-
     private static void StartThreads(Action threadAction, int numberOfThreads)
     {
         var threads = new Thread[numberOfThreads];
@@ -100,6 +105,8 @@ public class LazyTests
             Assert.Throws<ArgumentNullException>(() => testLazy.Get());
         }
     }
+
+    private int Successor(int a) => ++a;
 
     /// <summary>
     /// Class of test data.

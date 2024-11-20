@@ -10,11 +10,11 @@ namespace Lazy;
 /// Initializes a new instance of the <see cref="Lazy"/> class.
 /// </summary>
 /// <typeparam name="T">Function return type.</typeparam>
-public interface ILazy<T>
+public interface ILazy<out T>
 {
     /// <summary>
     /// A method for obtaining the result of a function.
     /// </summary>
     /// <returns>Function result.</returns>
-    public T Get();
+    public T? Get();
 }

@@ -7,37 +7,20 @@
 namespace Lazy;
 
 /// <inheritdoc/>
-public class SingleThreadLazy<T> : ILazy<T>
+public class SingleThreadLazy<T>(Func<T> func) : ILazy<T>
 {
-    private readonly Func<T> supplier;
+    private Func<T>? supplier = func;
     private T? result;
-    private bool hasResult;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="SingleThreadLazy{T}"/> class.
-    /// </summary>
-    /// <param name="func">Function.</param>
-    public SingleThreadLazy(Func<T> func)
-    {
-        supplier = func;
-    }
 
     /// <inheritdoc/>
-    public T Get()
+    public T? Get()
     {
-        if (!hasResult)
+        if (supplier != null)
         {
-            hasResult = true;
             result = supplier();
+            supplier = null;
         }
 
-        if (result != null)
-        {
-            return result;
-        }
-        else
-        {
-            throw new ArgumentNullException("The calculated value was null.");
-        }
+        return result;
     }
 }

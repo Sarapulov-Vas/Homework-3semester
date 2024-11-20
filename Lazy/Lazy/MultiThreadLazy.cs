@@ -7,41 +7,24 @@
 namespace Lazy;
 
 /// <inheritdoc/>
-public class MultiThreadLazy<T> : ILazy<T>
+public class MultiThreadLazy<T>(Func<T> func) : ILazy<T>
 {
-    private readonly Func<T> supplier;
+    private Func<T>? supplier = func;
     private T? result;
-    private bool hasResult;
     private readonly object lockObject = new();
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="MultiThreadLazy{T}"/> class.
-    /// </summary>
-    /// <param name="func">Function.</param>
-    public MultiThreadLazy(Func<T> func)
-    {
-        supplier = func;
-    }
-
     /// <inheritdoc/>
-    public T Get()
+    public T? Get()
     {
-        if (!hasResult)
+        lock (lockObject)
         {
-            lock (lockObject)
+            if (supplier != null)
             {
-                hasResult = true;
                 result = supplier();
+                supplier = null;
             }
         }
 
-        if (result != null)
-        {
-            return result;
-        }
-        else
-        {
-            throw new ArgumentNullException("The calculated value was null.");
-        }
+        return result;
     }
 }
