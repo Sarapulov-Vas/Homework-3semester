@@ -106,8 +106,6 @@ public class LazyTests
         }
     }
 
-    private int Successor(int a) => ++a;
-
     /// <summary>
     /// Class of test data.
     /// </summary>
