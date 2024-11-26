@@ -18,7 +18,7 @@ public static class UnitTest
     /// </summary>
     /// <param name="path">Path to the tests.</param>
     /// <returns>Tests result.</returns>
-    public static TestsInfo RunTests(string path)
+    public static async Task<TestsInfo> RunTests(string path)
     {
         TestsInfo testsResult = new ();
         List<Task<TestsInfo>> taskList = new ();
@@ -36,7 +36,7 @@ public static class UnitTest
 
         foreach (var task in taskList)
         {
-            var result = task.Result;
+            var result = await task;
             testsResult.LoadTestsResults(result);
         }
 
@@ -111,7 +111,7 @@ public static class UnitTest
 
     private static void StartTests(TestsInfo testsInfo, Type classType)
     {
-        if (testsInfo.GetNumberTests() == 0)
+        if (testsInfo.GetNumberTests == 0)
         {
             return;
         }

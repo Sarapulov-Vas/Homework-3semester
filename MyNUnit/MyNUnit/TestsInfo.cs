@@ -54,6 +54,18 @@ public class TestsInfo : IEnumerable<KeyValuePair<MethodInfo, TestResult?>>
     public int NumberIgnoredTests { get; private set; }
 
     /// <summary>
+    /// A method for retrieving messages that occurred during test execution.
+    /// </summary>
+    /// <returns>Messages.</returns>
+    public string[] GetMessages => messages.ToArray();
+
+    /// <summary>
+    /// A method for obtaining the number of tests.
+    /// </summary>
+    /// <returns>Number of tests.</returns>
+    public int GetNumberTests => tests.Count;
+
+    /// <summary>
     /// Indexer for accessing tests.
     /// </summary>
     /// <param name="test">Test.</param>
@@ -114,18 +126,6 @@ public class TestsInfo : IEnumerable<KeyValuePair<MethodInfo, TestResult?>>
     public void AddMessage(string message) => messages.Add(message);
 
     /// <summary>
-    /// A method for retrieving messages that occurred during test execution.
-    /// </summary>
-    /// <returns>Messages.</returns>
-    public string[] GetMessages() => messages.ToArray();
-
-    /// <summary>
-    /// A method for obtaining the number of tests.
-    /// </summary>
-    /// <returns>Number of tests.</returns>
-    public int GetNumberTests() => tests.Count;
-
-    /// <summary>
     /// Method for unloading tests from other classes.
     /// </summary>
     /// <param name="testsInfo">Loaded tests info.</param>
@@ -136,7 +136,7 @@ public class TestsInfo : IEnumerable<KeyValuePair<MethodInfo, TestResult?>>
             AddTest(test.Key, test.Value);
         }
 
-        foreach (var message in testsInfo.GetMessages())
+        foreach (var message in testsInfo.GetMessages)
         {
             AddMessage(message);
         }
