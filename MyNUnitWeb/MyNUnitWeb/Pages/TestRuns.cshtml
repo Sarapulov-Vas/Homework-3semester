@@ -1,0 +1,54 @@
+@page
+@model MyNUnitWeb.Pages.TestRuns
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Test runs</title>
+        <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.css">
+    </head>
+    <body>
+    <div class="row mb-3 text-center"><h2 class="col-sm-6">List of Test runs:</h2></div>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Number of tests</th>
+                <th>Passed</th>
+                <th>Failed</th>
+                <th>Ignored</th>
+                <th>Tests result</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var testRun in Model.Launches)
+            {
+                <tr>
+                    <td>@testRun.Id</td>
+                    <td>@testRun.NumberTests</td>
+                    <td>@testRun.NumberPassedTests</td>
+                    <td>@testRun.NumberFailedTests</td>
+                    <td>@testRun.NumberIgnoredTests</td>
+                    <td>
+                        <form asp-page="./TestResult" method="post" asp-route-Id="@testRun.Id">
+                            <button type="submit" class="btn btn-primary btn-lg">More</button>
+                        </form>
+                    </td>
+                    <td>
+                        <form method="post" asp-page-handler="Delete" asp-route-testRunId="@testRun.Id">
+                            <button type="submit" class="btn btn-danger btn-lg">Delete</button>
+                        </form>
+                    </td>  
+                </tr>
+            }
+        </tbody>
+    </table>
+    <form action="./Index">
+        <div class="col-sm-2 d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">Home</button>
+        </div>
+    </form>
+    </body>
+</html>

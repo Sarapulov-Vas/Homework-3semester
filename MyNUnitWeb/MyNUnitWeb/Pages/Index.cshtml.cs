@@ -1,9 +1,10 @@
 namespace MyNUnitWeb.Pages;
+using MyNUnit;
 
 [BindProperties]
-public class IndexModel : PageModel
+public class IndexModel(TestsDBContext context) : PageModel
 {
-    public readonly string TestsPath = Directory.GetCurrentDirectory() + "/wwwroot/Assemblies";
+    public string TestsPath { get; private set; } = Directory.GetCurrentDirectory() + "/wwwroot/Assemblies";
 
     public async Task<IActionResult> OnPostLoadAsync(IFormFile file)
     {
@@ -25,14 +26,39 @@ public class IndexModel : PageModel
         return Page();
     }
 
-    // public Task<IActionResult> OnPostRun(string fileName)
-    // {
-    //     var filePath = Path.Combine(TestsPath, fileName);
-    //     if (System.IO.File.Exists(filePath))
-    //     {
-    //         System.IO.File.Delete(filePath);
-    //     }
+    public async Task<IActionResult> OnPostRun()
+    {
+        var testsResult = await UnitTest.RunTests(TestsPath);
+        var testRun = new TestRun
+            {
+                NumberFailedTests = testsResult.NumberFailedTests,
+                NumberPassedTests = testsResult.NumberPassedTests,
+                NumberIgnoredTests = testsResult.NumberIgnoredTests,
+                NumberTests = testsResult.GetNumberTests,
+            };
+        context.TestRuns.Add(testRun);
+        await context.SaveChangesAsync();
+        foreach (var test in testsResult)
+        {
+            if (test.Value is not null)
+            {
+                var testResult = new TestModel
+                    {
+                        TestRunId = testRun.Id,
+                        Name = test.Key.Name,
+                        Message = test.Value.Messages,
+                        Result = test.Value.Result,
+                        Time = test.Value.Time,
+                        E = test.Value.E is not null ?
+                            test.Value.E.InnerException is not null ?
+                             test.Value.E.InnerException.Message : string.Empty : string.Empty,
+                    };
+                context.Tests.Add(testResult);
+            }
+        }
 
-    //     return Page();
-    // }
+        await context.SaveChangesAsync();
+
+        return RedirectToPage("./TestResult", new { testRun.Id });
+    }
 }
