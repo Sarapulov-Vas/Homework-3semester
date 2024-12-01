@@ -1,11 +1,29 @@
+// <copyright file="Index.cshtml.cs" company="Sarapulov Vasilii">
+// Copyright (c) Sarapulov Vasilii. All Rights Reserved.
+// Licensed under the MIT License. See LICENSE in the repository root for license information.
+// https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
+// </copyright>
+
 namespace MyNUnitWeb.Pages;
 using MyNUnit;
 
+/// <summary>
+/// Home page model.
+/// </summary>
+/// <param name="context">DB context.</param>
 [BindProperties]
 public class IndexModel(TestsDBContext context) : PageModel
 {
+    /// <summary>
+    /// Gets path to assemblies.
+    /// </summary>
     public string TestsPath { get; private set; } = Directory.GetCurrentDirectory() + "/wwwroot/Assemblies";
 
+    /// <summary>
+    /// Processing a POST request to upload a file.
+    /// </summary>
+    /// <param name="file">File.</param>
+    /// <returns>The PageResult.</returns>
     public async Task<IActionResult> OnPostLoadAsync(IFormFile file)
     {
         if (file is not null)
@@ -20,12 +38,21 @@ public class IndexModel(TestsDBContext context) : PageModel
         return Page();
     }
 
+    /// <summary>
+    /// Processing a POST request to delete a file.
+    /// </summary>
+    /// <param name="filePath">File path.</param>
+    /// <returns>The PageResult.</returns>
     public IActionResult OnPostDelete(string filePath)
     {
         System.IO.File.Delete(filePath);
         return Page();
     }
 
+    /// <summary>
+    /// Processing a POST request to run tests.
+    /// </summary>
+    /// <returns>The PageResult.</returns>
     public async Task<IActionResult> OnPostRun()
     {
         var testsResult = await UnitTest.RunTests(TestsPath);
