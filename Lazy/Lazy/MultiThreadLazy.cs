@@ -9,19 +9,22 @@ namespace Lazy;
 /// <inheritdoc/>
 public class MultiThreadLazy<T>(Func<T> func) : ILazy<T>
 {
-    private Func<T>? supplier = func;
+    private volatile Func<T>? supplier = func;
     private T? result;
     private readonly object lockObject = new();
 
     /// <inheritdoc/>
     public T? Get()
     {
-        lock (lockObject)
+        if (supplier != null)
         {
-            if (supplier != null)
+            lock (lockObject)
             {
-                result = supplier();
-                supplier = null;
+                if (supplier != null)
+                {
+                    result = supplier();
+                    supplier = null;
+                }
             }
         }
 
