@@ -6,6 +6,7 @@
 
 namespace MyNUnit.Tests;
 using MyNUnit;
+using NUnit.Framework.Api;
 
 /// <summary>
 /// Class for tests.
@@ -26,9 +27,9 @@ public class MyNUnitTests
     /// Test run tests by path in the directory.
     /// </summary>
     [NUnit.Framework.Test]
-    public void TestOfTests_PathToDirectory()
+    public async Task TestOfTests_PathToDirectory()
     {
-        var result = UnitTest.RunTests("../../../../TestFiles/Tests/bin/Debug/net8.0/");
+        var result = await UnitTest.RunTests("../../../../TestFiles/Tests/bin/Debug/net8.0/");
         foreach (var testResult in result)
         {
             Assert.That(testResult.Value!.Result, Is.EqualTo(expectedResult[testResult.Key.Name]));
@@ -39,9 +40,9 @@ public class MyNUnitTests
     /// Test run tests by file path.
     /// </summary>
     [NUnit.Framework.Test]
-    public void TestOfTests_PathToFile()
+    public async Task TestOfTests_PathToFile()
     {
-        var result = UnitTest.RunTests("../../../../TestFiles/Tests/bin/Debug/net8.0/Tests.dll");
+        var result = await UnitTest.RunTests("../../../../TestFiles/Tests/bin/Debug/net8.0/Tests.dll");
         foreach (var testResult in result)
         {
             Assert.That(testResult.Value!.Result, Is.EqualTo(expectedResult[testResult.Key.Name]));
@@ -52,10 +53,10 @@ public class MyNUnitTests
     /// Test messages for test errors.
     /// </summary>
     [NUnit.Framework.Test]
-    public void TestError()
+    public async Task TestError()
     {
-        var result = UnitTest.RunTests("../../../../TestFiles/TestsError/bin/Debug/net8.0");
-        foreach (var message in result.GetMessages())
+        var result = await UnitTest.RunTests("../../../../TestFiles/TestsError/bin/Debug/net8.0");
+        foreach (var message in result.GetMessages)
         {
             Assert.True(message.StartsWith("Exception"));
         }

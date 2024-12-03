@@ -22,10 +22,10 @@ if (!Path.Exists(args[0]))
 Console.WriteLine("Start test execution; wait ...");
 try
 {
-    var testsResult = UnitTest.RunTests(args[0]);
-    if (testsResult.GetMessages().Length != 0)
+    var testsResult = await UnitTest.RunTests(args[0]);
+    if (testsResult.GetMessages.Length != 0)
     {
-        foreach (var message in testsResult.GetMessages())
+        foreach (var message in testsResult.GetMessages)
         {
             Console.WriteLine(message);
         }
@@ -54,7 +54,7 @@ try
 
     Console.Write(testsResult.NumberFailedTests == 0 ? "Passed!  " : "Failed!  ");
     Console.WriteLine($"failed  {testsResult.NumberFailedTests}; passed  {testsResult.NumberPassedTests}; " +
-        $"ignored  {testsResult.NumberIgnoredTests}; total  {testsResult.GetNumberTests()}");
+        $"ignored  {testsResult.NumberIgnoredTests}; total  {testsResult.GetNumberTests}");
 }
 catch
 {
