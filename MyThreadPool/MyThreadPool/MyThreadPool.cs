@@ -11,11 +11,12 @@ namespace MyThreadPool;
 /// </summary>
 public class MyThreadPool
 {
-    private readonly CancellationTokenSource cancellation = new ();
-
-    private readonly Queue<Action> taskQueue = new ();
-
+    private readonly CancellationTokenSource cancellation = new();
+    private readonly Queue<Action> taskQueue = new();
     private readonly Thread[] threads;
+    private readonly AutoResetEvent queueWaitHandler = new(true);
+    private readonly AutoResetEvent taskQueueEvent = new(false);
+    private readonly ManualResetEvent shutdownEvent = new(false);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MyThreadPool"/> class.
@@ -31,7 +32,7 @@ public class MyThreadPool
         threads = new Thread[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++)
         {
-            threads[i] = new Thread(СompleteTask);
+            threads[i] = new Thread(CompleteTask);
             threads[i].Start();
         }
     }
@@ -43,7 +44,11 @@ public class MyThreadPool
     /// <param name="func">Function to calculate.</param>
     /// <returns>Task result.</returns>
     public IMyTask<TResult> Submit<TResult>(Func<TResult> func)
-        => new MyTask<TResult>(func, cancellation.Token, taskQueue);
+    {
+        var task = new MyTask<TResult>(func, this);
+        AddTask(task.RunTask);
+        return task;
+    }
 
     /// <summary>
     /// The method that shutdown threads.
@@ -51,38 +56,141 @@ public class MyThreadPool
     public void Shutdown()
     {
         cancellation.Cancel();
-        lock (taskQueue)
-        {
-            Monitor.PulseAll(taskQueue);
-        }
-
+        shutdownEvent.Set();
         foreach (var thread in threads)
         {
             thread.Join();
         }
     }
 
-    private void СompleteTask()
+    private void AddTask(Action runTask)
+    {
+        queueWaitHandler.WaitOne();
+        taskQueue.Enqueue(runTask);
+        queueWaitHandler.Set();
+        taskQueueEvent.Set();
+    }
+
+    private void CompleteTask()
     {
         while (!cancellation.IsCancellationRequested || taskQueue.Count > 0)
         {
-            Action task;
-            lock (taskQueue)
+            queueWaitHandler.WaitOne();
+            if (taskQueue.Count == 0)
             {
-                while (taskQueue.Count == 0)
-                {
-                    if (cancellation.IsCancellationRequested)
-                    {
-                        return;
-                    }
-
-                    Monitor.Wait(taskQueue);
-                }
-
-                task = taskQueue.Dequeue();
+                queueWaitHandler.Set();
+                WaitHandle.WaitAny([taskQueueEvent, shutdownEvent]);
+                continue;
             }
 
+            var task = taskQueue.Dequeue();
+            queueWaitHandler.Set();
             task();
+        }
+    }
+
+    /// <summary>
+    /// Class that implements the task interface.
+    /// </summary>
+    /// <typeparam name="TResult">The type of result of the task calculation.</typeparam>
+    public class MyTask<TResult> : IMyTask<TResult>
+    {
+        private readonly MyThreadPool threadPool;
+        private readonly Func<TResult> function;
+        private readonly ManualResetEvent resultWaitHandler = new(false);
+        private readonly AutoResetEvent continueWithHandler = new(true);
+        private readonly List<Action> continueTaskList = new();
+        private readonly CancellationToken cancellation;
+        private Exception? exception;
+        private TResult? result;
+        private volatile bool isCompleted = false;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MyTask{TResult}"/> class.
+        /// </summary>
+        /// <param name="func">Task.</param>
+        /// <param name="threadPool">Thread pool.</param>
+        public MyTask(Func<TResult> func, MyThreadPool threadPool)
+        {
+            function = func;
+            cancellation = threadPool.cancellation.Token;
+            this.threadPool = threadPool;
+        }
+
+        /// <inheritdoc/>
+        public bool IsCompleted => isCompleted;
+
+        /// <inheritdoc/>
+        public TResult Result => GetResult();
+
+        /// <inheritdoc/>
+        public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> func)
+        {
+            if (isCompleted)
+            {
+                return threadPool.Submit(() => func(Result));
+            }
+
+            var task = new MyTask<TNewResult>(() => func(Result), threadPool);
+            continueWithHandler.WaitOne();
+            continueTaskList.Add(task.RunTask);
+            continueWithHandler.Set();
+            return task;
+        }
+
+        /// <summary>
+        /// Task Start Method.
+        /// </summary>
+        public void RunTask()
+        {
+            if (cancellation.IsCancellationRequested)
+            {
+                resultWaitHandler.Set();
+                return;
+            }
+
+            try
+            {
+                result = function();
+            }
+            catch (Exception e)
+            {
+                exception = e;
+            }
+
+            isCompleted = true;
+            resultWaitHandler.Set();
+            continueWithHandler.WaitOne();
+            foreach (var continueTask in continueTaskList)
+            {
+                threadPool.AddTask(continueTask);
+            }
+
+            continueWithHandler.Set();
+        }
+
+        private TResult GetResult()
+        {
+            if (!isCompleted && cancellation.IsCancellationRequested)
+            {
+                throw new TaskCanceledException();
+            }
+
+            if (!isCompleted)
+            {
+                resultWaitHandler.WaitOne();
+            }
+
+            if (exception is not null)
+            {
+                throw new AggregateException(exception);
+            }
+            else if (result is null)
+            {
+                throw new ArgumentNullException("The function result was null.");
+            }
+
+            return result;
         }
     }
 }
