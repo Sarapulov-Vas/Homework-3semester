@@ -7,7 +7,6 @@
 namespace SimpleFTP;
 
 using System.Net.Sockets;
-using System.Text;
 
 /// <summary>
 /// Client class.
@@ -27,12 +26,12 @@ public class Client(string hostName, int port)
     /// <returns>List of contents if a directory.</returns>
     public async Task<(string path, bool isDir)[]> List(string path)
     {
-    using var client = new TcpClient(hostName, port);
-    var stream = client.GetStream();
-    var writer = new StreamWriter(stream);
-    writer.WriteLineAsync($"1 {path}");
-    writer.Flush();
-    return await ProcessListResponse(stream);
+        using var client = new TcpClient(hostName, port);
+        var stream = client.GetStream();
+        var writer = new StreamWriter(stream);
+        writer.WriteLineAsync($"1 {path}");
+        writer.Flush();
+        return await ProcessListResponse(stream);
     }
 
     /// <summary>
@@ -42,12 +41,12 @@ public class Client(string hostName, int port)
     /// <returns>The byte array of the file.</returns>
     public async Task<byte[]> Get(string path)
     {
-    using var client = new TcpClient(hostName, port);
-    var stream = client.GetStream();
-    var writer = new StreamWriter(stream);
-    await writer.WriteLineAsync($"2 {path}");
-    await writer.FlushAsync();
-    return ProcessGetResponse(stream);
+        using var client = new TcpClient(hostName, port);
+        var stream = client.GetStream();
+        var writer = new StreamWriter(stream);
+        await writer.WriteLineAsync($"2 {path}");
+        await writer.FlushAsync();
+        return ProcessGetResponse(stream);
     }
 
     private async Task<(string path, bool isDir)[]> ProcessListResponse(Stream stream)
