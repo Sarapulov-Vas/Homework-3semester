@@ -241,7 +241,7 @@ public class MyThreadPoolTests
         Assert.Throws<TaskCanceledException>(() => { var a = task2.Result; });
         Assert.False(task2.IsCompleted);
         Assert.Throws<TaskCanceledException>(() => { var a = task3.Result; });
-        Assert.False(task2.IsCompleted);
+        Assert.False(task3.IsCompleted);
     }
 
     /// <summary>

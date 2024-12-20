@@ -103,7 +103,6 @@ public class MyThreadPool
         private readonly CancellationToken cancellation;
         private Exception? exception;
         private TResult? result;
-        private volatile bool isCompleted = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MyTask{TResult}"/> class.
@@ -118,7 +117,7 @@ public class MyThreadPool
         }
 
         /// <inheritdoc/>
-        public bool IsCompleted => isCompleted;
+        public bool IsCompleted { get; private set; }
 
         /// <inheritdoc/>
         public TResult Result => GetResult();
@@ -126,13 +125,14 @@ public class MyThreadPool
         /// <inheritdoc/>
         public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> func)
         {
-            if (isCompleted)
+            continueWithHandler.WaitOne();
+            if (IsCompleted)
             {
+                continueWithHandler.Set();
                 return threadPool.Submit(() => func(Result));
             }
 
             var task = new MyTask<TNewResult>(() => func(Result), threadPool);
-            continueWithHandler.WaitOne();
             continueTaskList.Add(task.RunTask);
             continueWithHandler.Set();
             return task;
@@ -158,7 +158,7 @@ public class MyThreadPool
                 exception = e;
             }
 
-            isCompleted = true;
+            IsCompleted = true;
             resultWaitHandler.Set();
             continueWithHandler.WaitOne();
             foreach (var continueTask in continueTaskList)
@@ -171,12 +171,12 @@ public class MyThreadPool
 
         private TResult GetResult()
         {
-            if (!isCompleted && cancellation.IsCancellationRequested)
+            if (!IsCompleted && cancellation.IsCancellationRequested)
             {
                 throw new TaskCanceledException();
             }
 
-            if (!isCompleted)
+            if (!IsCompleted)
             {
                 resultWaitHandler.WaitOne();
             }
