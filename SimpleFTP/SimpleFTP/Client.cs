@@ -15,10 +15,6 @@ using System.Net.Sockets;
 /// <param name="port">Port.</param>
 public class Client(string hostName, int port)
 {
-    private readonly string hostName = hostName;
-
-    private readonly int port = port;
-
     /// <summary>
     /// Method for requesting a list of the contents of a directory.
     /// </summary>
@@ -29,7 +25,7 @@ public class Client(string hostName, int port)
         using var client = new TcpClient(hostName, port);
         var stream = client.GetStream();
         var writer = new StreamWriter(stream);
-        writer.WriteLineAsync($"1 {path}");
+        await writer.WriteLineAsync($"1 {path}");
         writer.Flush();
         return await ProcessListResponse(stream);
     }

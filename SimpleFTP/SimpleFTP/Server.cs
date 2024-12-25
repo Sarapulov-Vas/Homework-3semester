@@ -17,31 +17,32 @@ using System.Text;
 /// <param name="port">Port.</param>
 public class Server(IPAddress address, int port)
 {
-    private readonly TcpListener tcpListener = new (address, port);
+    private readonly TcpListener tcpListener = new(address, port);
 
-    private readonly CancellationTokenSource cancellation = new ();
+    private readonly CancellationTokenSource cancellation = new();
+    private readonly List<Task> tasks = [];
 
     /// <summary>
     /// Server start method.
     /// </summary>
-    public void Start()
+    public async void Start()
     {
         tcpListener.Start();
-        Run();
+        await Run();
     }
 
     /// <summary>
     /// A method for shutting down a server.
     /// </summary>
-    public void Shutdown()
+    public async void Shutdown()
     {
         cancellation.Cancel();
+        await Task.WhenAll(tasks);
         tcpListener.Stop();
     }
 
     private async Task Run()
     {
-        List<Task> tasks = [];
         while (!cancellation.IsCancellationRequested)
         {
             try
@@ -59,7 +60,7 @@ public class Server(IPAddress address, int port)
 
                     try
                     {
-                        ProcessRequest(data, stream);
+                        await ProcessRequest(data, stream);
                     }
                     finally
                     {
@@ -73,8 +74,6 @@ public class Server(IPAddress address, int port)
                 break;
             }
         }
-
-        Task.WhenAll(tasks);
     }
 
     private async Task ProcessRequest(string request, Stream stream)
@@ -94,7 +93,8 @@ public class Server(IPAddress address, int port)
                 RespondToGetRequest(elements[1], stream);
                 break;
             default:
-                throw new ArgumentException("Invalid request type.");
+                RespondToInvalidRequest(stream);
+                break;
         }
     }
 
@@ -109,7 +109,7 @@ public class Server(IPAddress address, int port)
         }
 
         var files = Directory.GetFileSystemEntries(path);
-        StringBuilder response = new ();
+        StringBuilder response = new();
         response.Append(files.Length);
         foreach (var file in files)
         {
@@ -138,6 +138,13 @@ public class Server(IPAddress address, int port)
             writer.Write((byte)fileStream.ReadByte());
         }
 
+        writer.Flush();
+    }
+
+    private void RespondToInvalidRequest(Stream stream)
+    {
+        var writer = new BinaryWriter(stream);
+        writer.Write("-1");
         writer.Flush();
     }
 }
