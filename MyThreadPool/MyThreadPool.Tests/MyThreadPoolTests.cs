@@ -183,7 +183,7 @@ public class MyThreadPoolTests
             Thread.Sleep(200);
             return 1;
         });
-        var taskContinue = task.ContinueWith((x) => x * 10);
+        var taskContinue = task.ContinueWith(x => x * 10);
         Assert.That(taskContinue.Result, Is.EqualTo(10));
         Assert.IsTrue(taskContinue.IsCompleted);
     }
@@ -232,16 +232,14 @@ public class MyThreadPoolTests
             Thread.Sleep(100);
             return 1;
         });
-        Thread.Sleep(100);
         var task2 = pool.Submit(() => 1 + 1);
         pool.Shutdown();
-        var task3 = pool.Submit(() => 1 + 1);
+        Assert.Throws<TaskCanceledException>(() => pool.Submit(() => 1 + 1));
+        Assert.Throws<TaskCanceledException>(() => task1.ContinueWith(x => x + 1));
         Assert.That(task1.Result, Is.EqualTo(1));
         Assert.True(task1.IsCompleted);
-        Assert.Throws<TaskCanceledException>(() => { var a = task2.Result; });
-        Assert.False(task2.IsCompleted);
-        Assert.Throws<TaskCanceledException>(() => { var a = task3.Result; });
-        Assert.False(task3.IsCompleted);
+        Assert.That(task2.Result, Is.EqualTo(2));
+        Assert.True(task2.IsCompleted);
     }
 
     /// <summary>
@@ -257,32 +255,77 @@ public class MyThreadPoolTests
         var pool = new MyThreadPool(numberOfThreads);
         var task1 = pool.Submit(() => 1 + 2);
         pool.Shutdown();
-        var task2 = task1.ContinueWith((x) => x.ToString());
-        Assert.Throws<TaskCanceledException>(() => { var a = task2.Result; });
+        Assert.Throws<TaskCanceledException>(() => task1.ContinueWith((x) => x.ToString()));
     }
 
     /// <summary>
-    /// Test of parallel access to thread pool.
+    /// Test of parallel access to task.
     /// </summary>
+    /// <param name="numberOfThreads">Number of threads.</param>
     [Timeout(5000)]
-    [Test]
-    public void TestParallelAccess()
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(5)]
+    public void TestParallelAccess(int numberOfThreads)
     {
-        int numberOfThreads = 1;
         var pool = new MyThreadPool(numberOfThreads);
+        ManualResetEvent resetEvent = new (false);
         var task = pool.Submit(() =>
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(100);
             return 1;
         });
 
         var threads = new Thread[5];
         for (int i = 0; i < 5; i++)
         {
-            threads[i] = new Thread(() => Assert.That(task.Result, Is.EqualTo(1)));
+            threads[i] = new Thread(() =>
+            {
+                resetEvent.WaitOne();
+                Assert.That(task.Result, Is.EqualTo(1));
+                Assert.IsTrue(task.IsCompleted);
+            });
             threads[i].Start();
         }
 
+        resetEvent.Set();
+        foreach (var thread in threads)
+        {
+            thread.Join();
+        }
+    }
+
+    /// <summary>
+    /// Test of parallel submit to thread pool.
+    /// </summary>
+    /// <param name="numberOfThreads">Number of threads.</param>
+    [Timeout(5000)]
+    [TestCase(1)]
+    [TestCase(2)]
+    [TestCase(5)]
+    [TestCase(10)]
+    public void TestParallelSubmit(int numberOfThreads)
+    {
+        var pool = new MyThreadPool(numberOfThreads);
+        ManualResetEvent resetEvent = new (false);
+        var threads = new Thread[5];
+        for (int i = 0; i < 5; i++)
+        {
+            threads[i] = new Thread(() =>
+            {
+                resetEvent.WaitOne();
+                var task = pool.Submit(() =>
+                {
+                    Thread.Sleep(100);
+                    return 1;
+                });
+                Assert.That(task.Result, Is.EqualTo(1));
+                Assert.IsTrue(task.IsCompleted);
+            });
+            threads[i].Start();
+        }
+
+        resetEvent.Set();
         foreach (var thread in threads)
         {
             thread.Join();

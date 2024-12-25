@@ -24,10 +24,7 @@ public class MyThreadPool
     /// <param name="numberOfThreads">Number of threads.</param>
     public MyThreadPool(int numberOfThreads)
     {
-        if (numberOfThreads <= 0)
-        {
-            throw new ArgumentOutOfRangeException("The number of streams must be positive.");
-        }
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(numberOfThreads);
 
         threads = new Thread[numberOfThreads];
         for (int i = 0; i < numberOfThreads; i++)
@@ -45,6 +42,11 @@ public class MyThreadPool
     /// <returns>Task result.</returns>
     public IMyTask<TResult> Submit<TResult>(Func<TResult> func)
     {
+        if (cancellation.IsCancellationRequested)
+        {
+            throw new TaskCanceledException();
+        }
+
         var task = new MyTask<TResult>(func, this);
         AddTask(task.RunTask);
         return task;
@@ -96,13 +98,13 @@ public class MyThreadPool
     public class MyTask<TResult> : IMyTask<TResult>
     {
         private readonly MyThreadPool threadPool;
-        private readonly Func<TResult> function;
         private readonly ManualResetEvent resultWaitHandler = new(false);
         private readonly AutoResetEvent continueWithHandler = new(true);
         private readonly List<Action> continueTaskList = new();
         private readonly CancellationToken cancellation;
         private Exception? exception;
         private TResult? result;
+        private Func<TResult>? function;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MyTask{TResult}"/> class.
@@ -126,6 +128,11 @@ public class MyThreadPool
         public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> func)
         {
             continueWithHandler.WaitOne();
+            if (cancellation.IsCancellationRequested)
+            {
+                throw new TaskCanceledException();
+            }
+
             if (IsCompleted)
             {
                 continueWithHandler.Set();
@@ -143,15 +150,13 @@ public class MyThreadPool
         /// </summary>
         public void RunTask()
         {
-            if (cancellation.IsCancellationRequested)
-            {
-                resultWaitHandler.Set();
-                return;
-            }
-
             try
             {
-                result = function();
+                if (function is not null)
+                {
+                    result = function();
+                    function = null;
+                }
             }
             catch (Exception e)
             {
@@ -171,11 +176,6 @@ public class MyThreadPool
 
         private TResult GetResult()
         {
-            if (!IsCompleted && cancellation.IsCancellationRequested)
-            {
-                throw new TaskCanceledException();
-            }
-
             if (!IsCompleted)
             {
                 resultWaitHandler.WaitOne();
