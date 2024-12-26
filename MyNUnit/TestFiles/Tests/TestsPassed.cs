@@ -5,7 +5,6 @@
 // </copyright>
 
 namespace TestFiles;
-using MyNUnit;
 public class TestsPassed
 {
     private int status;
@@ -41,7 +40,7 @@ public class TestsPassed
         Thread.Sleep(200);
     }
 
-    [Test(TestArgument.Expected)]
+    [Test(typeof(DivideByZeroException))]
     public void TestPassed2()
     {
         throw new DivideByZeroException();

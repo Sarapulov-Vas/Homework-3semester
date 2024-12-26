@@ -5,16 +5,16 @@
 // </copyright>
 
 namespace TestFiles;
-using MyNUnit;
+
 public class TestsIgnored
 {
-    [Test(TestArgument.Ignore, "WIP")]
+    [Test("WIP")]
     public void TestIgnored1()
     {
         Console.WriteLine("ignored");
     }
 
-    [Test(TestArgument.Ignore)]
+    [Test("")]
     public void TestIgnored2()
     {
         throw new DivideByZeroException();

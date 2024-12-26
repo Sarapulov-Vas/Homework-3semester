@@ -14,9 +14,9 @@ using System.Reflection;
 /// </summary>
 public class TestsInfo : IEnumerable<KeyValuePair<MethodInfo, TestResult?>>
 {
-    private readonly Dictionary<MethodInfo, TestResult?> tests = new ();
+    private readonly Dictionary<MethodInfo, TestResult?> tests = new();
 
-    private readonly List<string> messages = new ();
+    private readonly List<string> messages = new();
 
     /// <summary>
     /// Gets or sets method to execute before running the test.
@@ -54,13 +54,13 @@ public class TestsInfo : IEnumerable<KeyValuePair<MethodInfo, TestResult?>>
     public int NumberIgnoredTests { get; private set; }
 
     /// <summary>
-    /// A method for retrieving messages that occurred during test execution.
+    /// Gets retrieving messages that occurred during test execution.
     /// </summary>
     /// <returns>Messages.</returns>
     public string[] GetMessages => messages.ToArray();
 
     /// <summary>
-    /// A method for obtaining the number of tests.
+    /// Gets the number of tests.
     /// </summary>
     /// <returns>Number of tests.</returns>
     public int GetNumberTests => tests.Count;
