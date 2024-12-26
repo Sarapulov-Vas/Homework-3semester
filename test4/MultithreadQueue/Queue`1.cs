@@ -13,7 +13,7 @@ namespace MultithreadQueue;
 /// </typeparam>
 public class Queue<T>
 {
-    private PriorityQueue<T, int> queue = new(Comparer<int>.Create((x, y) => y.CompareTo(x)));
+    private readonly PriorityQueue<T, int> queue = new(Comparer<int>.Create((x, y) => y.CompareTo(x)));
 
     /// <summary>
     /// Method for adding an item to the queue.
