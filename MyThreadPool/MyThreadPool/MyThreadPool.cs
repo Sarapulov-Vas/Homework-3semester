@@ -17,6 +17,7 @@ public class MyThreadPool
     private readonly AutoResetEvent queueWaitHandler = new(true);
     private readonly AutoResetEvent taskQueueEvent = new(false);
     private readonly ManualResetEvent shutdownEvent = new(false);
+    private readonly object lockObject = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MyThreadPool"/> class.
@@ -42,14 +43,17 @@ public class MyThreadPool
     /// <returns>Task result.</returns>
     public IMyTask<TResult> Submit<TResult>(Func<TResult> func)
     {
-        if (cancellation.IsCancellationRequested)
+        lock (lockObject)
         {
-            throw new TaskCanceledException();
-        }
+            if (cancellation.IsCancellationRequested)
+            {
+                throw new TaskCanceledException();
+            }
 
-        var task = new MyTask<TResult>(func, this);
-        AddTask(task.RunTask);
-        return task;
+            var task = new MyTask<TResult>(func, this);
+            AddTask(task.RunTask);
+            return task;
+        }
     }
 
     /// <summary>
@@ -57,8 +61,12 @@ public class MyThreadPool
     /// </summary>
     public void Shutdown()
     {
-        cancellation.Cancel();
-        shutdownEvent.Set();
+        lock (lockObject)
+        {
+            cancellation.Cancel();
+            shutdownEvent.Set();
+        }
+
         foreach (var thread in threads)
         {
             thread.Join();
