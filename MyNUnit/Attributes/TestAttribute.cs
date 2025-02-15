@@ -45,5 +45,5 @@ public class TestAttribute : Attribute
     /// <summary>
     ///  Gets ignore message.
     /// </summary>
-    public string? Ignore { get; private set; };
+    public string? Ignore { get; private set; }
 }
