@@ -25,7 +25,8 @@ public class Server(IPAddress address, int port)
     /// <summary>
     /// Server start method.
     /// </summary>
-    public async void Start()
+    /// <returns>Task.</returns>
+    public async Task Start()
     {
         tcpListener.Start();
         await Run();
@@ -34,7 +35,8 @@ public class Server(IPAddress address, int port)
     /// <summary>
     /// A method for shutting down a server.
     /// </summary>
-    public async void Shutdown()
+    /// <returns>Task.</returns>
+    public async Task Shutdown()
     {
         cancellation.Cancel();
         await Task.WhenAll(tasks);
