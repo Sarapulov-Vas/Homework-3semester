@@ -76,9 +76,9 @@ public class IndexModel(TestsDBContext context) : PageModel
                         Message = test.Value.Messages,
                         Result = test.Value.Result,
                         Time = test.Value.Time,
-                        E = test.Value.E is not null ?
-                            test.Value.E.InnerException is not null ?
-                             test.Value.E.InnerException.Message : string.Empty : string.Empty,
+                        E = test.Value.Exception is not null ?
+                            test.Value.Exception.InnerException is not null ?
+                             test.Value.Exception.InnerException.Message : string.Empty : string.Empty,
                     };
                 context.Tests.Add(testResult);
             }
