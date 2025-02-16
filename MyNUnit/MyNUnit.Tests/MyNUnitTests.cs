@@ -8,6 +8,7 @@ namespace MyNUnit.Tests;
 
 using System.Reflection;
 using MyNUnit;
+using NUnit.Framework.Api;
 
 /// <summary>
 /// Class for tests.
@@ -53,7 +54,7 @@ public class MyNUnitTests
     /// <summary>
     /// Test run tests by file path.
     /// </summary>
-    // [NUnit.Framework.Test]
+    [NUnit.Framework.Test]
     public async Task TestOfTests_PathToFile()
     {
         var result = await UnitTest.RunTests("../../../../TestFiles/Tests/bin/Debug/net9.0/Tests.dll");
@@ -66,7 +67,7 @@ public class MyNUnitTests
     /// <summary>
     /// Test messages for test errors.
     /// </summary>
-    // [NUnit.Framework.Test]
+    [NUnit.Framework.Test]
     public async Task TestError()
     {
         var result = await UnitTest.RunTests("../../../../TestFiles/TestsError/bin/Debug/net9.0");

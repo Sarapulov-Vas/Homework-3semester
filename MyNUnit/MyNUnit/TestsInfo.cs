@@ -54,13 +54,13 @@ public class TestsInfo : IEnumerable<KeyValuePair<MethodInfo, TestResult?>>
     public int NumberIgnoredTests { get; private set; }
 
     /// <summary>
-    /// Gets retrieving messages that occurred during test execution.
+    /// A method for retrieving messages that occurred during test execution.
     /// </summary>
     /// <returns>Messages.</returns>
     public string[] GetMessages => messages.ToArray();
 
     /// <summary>
-    /// Gets the number of tests.
+    /// A method for obtaining the number of tests.
     /// </summary>
     /// <returns>Number of tests.</returns>
     public int GetNumberTests => tests.Count;
