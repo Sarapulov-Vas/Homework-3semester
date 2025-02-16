@@ -5,8 +5,10 @@
 // </copyright>
 
 namespace MyNUnit;
-using System.Reflection;
+
 using System.Diagnostics;
+using System.Reflection;
+using TestAttributes;
 
 /// <summary>
 /// A class that implements running unit tests.
@@ -20,8 +22,8 @@ public static class UnitTest
     /// <returns>Tests result.</returns>
     public static async Task<TestsInfo> RunTests(string path)
     {
-        TestsInfo testsResult = new ();
-        List<Task<TestsInfo>> taskList = new ();
+        TestsInfo testsResult = new();
+        List<Task<TestsInfo>> taskList = new();
         if (File.Exists(path))
         {
             taskList.Add(Task.Run(() => Run(path)));
@@ -43,11 +45,11 @@ public static class UnitTest
         return testsResult;
     }
 
-    private static TestsInfo Run(string path)
+    private static async Task<TestsInfo> Run(string path)
     {
-        TestsInfo testsResult = new ();
+        TestsInfo testsResult = new();
         var assembly = Assembly.LoadFrom(path);
-        List<Task<TestsInfo>> taskList = new ();
+        List<Task<TestsInfo>> taskList = new();
         foreach (var type in assembly.GetExportedTypes())
         {
             taskList.Add(Task.Run(() =>
@@ -68,7 +70,7 @@ public static class UnitTest
 
         foreach (var task in taskList)
         {
-            var result = task.Result;
+            var result = await task;
             testsResult.LoadTestsResults(result);
         }
 
@@ -77,7 +79,7 @@ public static class UnitTest
 
     private static TestsInfo GetTestsInfo(Type classType)
     {
-        TestsInfo testsInfo = new ();
+        TestsInfo testsInfo = new();
         foreach (var methodInfo in classType.GetMethods())
         {
             var attrs = Attribute.GetCustomAttributes(methodInfo);
@@ -122,7 +124,7 @@ public static class UnitTest
             {
                 testsInfo.BeforeClass.Invoke(classType, null);
             }
-            catch (Exception e)
+            catch (TargetInvocationException e)
             {
                 testsInfo.AddMessage($"Exception in {testsInfo.BeforeClass.Name}; Message:\n {e.Message}");
                 throw;
@@ -138,7 +140,7 @@ public static class UnitTest
                 {
                     testsInfo.BeforeTest.Invoke(instance, null);
                 }
-                catch (Exception e)
+                catch (TargetInvocationException e)
                 {
                     testsInfo.AddMessage($"Exception in {testsInfo.BeforeTest.Name}; Message:\n {e.Message}");
                     continue;
@@ -146,9 +148,9 @@ public static class UnitTest
             }
 
             var attributeArguments = (TestAttribute)Attribute.GetCustomAttributes(test.Key)[0];
-            if (attributeArguments.Argument == TestArgument.Ignore)
+            if (attributeArguments.Ignore != null)
             {
-                testsInfo[test.Key] = new TestResult(-1, attributeArguments.Message, 0, null);
+                testsInfo[test.Key] = new TestResult(-1, attributeArguments.Ignore, 0, null);
             }
             else
             {
@@ -168,7 +170,8 @@ public static class UnitTest
                 }
                 catch (Exception e)
                 {
-                    if (attributeArguments.Argument == TestArgument.Expected)
+                    if (attributeArguments.Expected is not null && e.InnerException is not null
+                        && attributeArguments.Expected.Equals(e.InnerException.GetType()))
                     {
                         stopwatch.Stop();
                         testsInfo[test.Key] = new TestResult(1, string.Empty, stopwatch.ElapsedMilliseconds, e);

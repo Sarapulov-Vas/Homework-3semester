@@ -25,7 +25,7 @@ public class TestResult(int result, string message, long time, Exception? except
     /// <summary>
     /// Gets a value indicating whether the test has been successfully passed.
     /// </summary>
-    public long Result { get; private set; } = result;
+    public int Result { get; private set; } = result;
 
     /// <summary>
     /// Gets test execution time.
@@ -35,5 +35,5 @@ public class TestResult(int result, string message, long time, Exception? except
     /// <summary>
     /// Gets exception during the execution of the test.
     /// </summary>
-    public Exception? E { get; private set; } = exception;
+    public Exception? Exception { get; private set; } = exception;
 }

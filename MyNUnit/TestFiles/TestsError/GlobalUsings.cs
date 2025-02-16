@@ -4,4 +4,4 @@
 // https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
 // </copyright>
 
-global using MyNUnit;
+global using TestAttributes;

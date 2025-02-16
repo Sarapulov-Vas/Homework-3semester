@@ -15,7 +15,7 @@ if (args.Length != 1)
 
 if (!Path.Exists(args[0]))
 {
-    Console.WriteLine("Path dose not exist.");
+    Console.WriteLine("Path does not exist.");
     return;
 }
 
@@ -47,8 +47,8 @@ try
         }
         else
         {
-            Console.WriteLine($"Failed;\n Exception message:\n {test.Value.E!.InnerException!.Message}");
-            Console.WriteLine($"Stack trace:\n {test.Value.E!.InnerException!.StackTrace}");
+            Console.WriteLine($"Failed;\n Exception message:\n {test.Value.Exception!.InnerException!.Message}");
+            Console.WriteLine($"Stack trace:\n {test.Value.Exception!.InnerException!.StackTrace}");
         }
     }
 

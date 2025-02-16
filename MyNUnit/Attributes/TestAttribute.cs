@@ -4,7 +4,7 @@
 // https://github.com/Sarapulov-Vas/Homework-3semester/blob/main/LICENSE
 // </copyright>
 
-namespace MyNUnit;
+namespace TestAttributes;
 
 /// <summary>
 /// Test attribute.
@@ -15,10 +15,8 @@ public class TestAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="TestAttribute"/> class.
     /// </summary>
-    /// <param name="argument">Test argument.</param>
-    public TestAttribute(TestArgument argument)
+    public TestAttribute()
     {
-        Argument = argument;
     }
 
     /// <summary>
@@ -26,26 +24,26 @@ public class TestAttribute : Attribute
     /// </summary>
     /// <param name="argument">Test argument.</param>
     /// <param name="message">Ignore message.</param>
-    public TestAttribute(TestArgument argument, string message)
+    public TestAttribute(string ignore)
     {
-        Argument = argument;
-        Message = message;
+        Ignore = ignore;
     }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TestAttribute"/> class.
     /// </summary>
-    public TestAttribute()
+    public TestAttribute(Type E)
     {
+        Expected = E;
     }
 
     /// <summary>
     /// Gets test argument.
     /// </summary>
-    public TestArgument? Argument { get; private set; } = null;
+    public Type? Expected { get; private set; } = null;
 
     /// <summary>
     ///  Gets ignore message.
     /// </summary>
-    public string Message { get; private set; } = string.Empty;
+    public string? Ignore { get; private set; }
 }
