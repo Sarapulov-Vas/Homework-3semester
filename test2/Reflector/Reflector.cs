@@ -11,7 +11,7 @@ using System.Text;
 /// <summary>
 /// A class for print the structure of a class.
 /// </summary>
-public class Reflector
+public static class Reflector
 {
     /// <summary>
     /// Method for printing class structure.
@@ -20,7 +20,6 @@ public class Reflector
     public static void PrintStructure(Type someClass)
     {
         var file = File.Create($"../../../{someClass.Name}.cs");
-        Console.WriteLine(Directory.GetCurrentDirectory());
         var writer = new StreamWriter(file);
         var structure = GetClassStructure(someClass);
         writer.WriteLine(structure);
@@ -35,7 +34,7 @@ public class Reflector
     /// <returns>Class diff.</returns>
     public static string DiffClasses(Type firstClass, Type secondClass)
     {
-        StringBuilder stringBuilder = new();
+        StringBuilder stringBuilder = new ();
         stringBuilder.Append(DiffMembers(firstClass.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static),
                     secondClass.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)));
 

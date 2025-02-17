@@ -14,7 +14,7 @@
 
     private class NestedClass
     {
-        public string TestNestedClassField;
+        public string TestNestedClassField = string.Empty;
         public int testNestedClassMethod(int a, int b) => a + b;
     }
 }
