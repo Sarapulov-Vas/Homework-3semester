@@ -94,7 +94,6 @@ public static class Reflector
 
         foreach (var nestedClass in someClass.GetNestedTypes(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance))
         {
-            Console.WriteLine(nestedClass.Name);
             stringBuilder.Append(GetClassStructure(nestedClass));
         }
 
