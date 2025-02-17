@@ -20,6 +20,7 @@ public class ReflectorTests
     {
         var assembly = Assembly.LoadFrom("../../../../TestClass/bin/Debug/net9.0/TestClass.dll");
         Reflector.PrintStructure(assembly.GetTypes()[0]);
+        File.Delete("../../../TestClass.cs");
     }
 
     /// <summary>
